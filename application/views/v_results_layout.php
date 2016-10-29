@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="IE=edge" http-equiv="X-UA-Compatible">
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title><?php echo @$page_title;?></title>
+    <meta name="description" content="<?php echo @$meta_description;?>" />
+    <meta name="keywords" content="<?php echo @$meta_keywords;?>" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/libs/font-awesome/css/font-awesome.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/toastr/toastr.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable-theme.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/videojs/video-js.min.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/css/video-modal.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/css/frontend-common.css" />
+    <link rel="stylesheet" href="<?php echo base_url();?>assets/css/results-layout.css" />
+</head>
+<body>
+    <div id="page_wrapper">
+        <header>
+            <section id="top_bar" class="container-fluid max-width main-padding">
+                <div id="logo">
+                    <a href="<?php echo base_url();?>"><i class="fa fa-camera fa-lg" style="color:#D61"></i> Media Gallery</a>
+                </div>
+                <div id="actions">
+                    <ul>
+                        <li class="hasmenu">
+                            <a>FAVORITES</a>
+                            <ul class="submenu" id="menu_favorites">
+                                <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
+                                <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
+                            </ul>
+                        </li>
+                        <li>&nbsp;|&nbsp;</li>
+                        <li><a>SIGN IN</a></li>
+                    </ul>
+                </div>
+            </section>
+        </header>
+        <main>
+            <div id="results_app">
+                <section id="search_bar" tabindex="1">
+                    <div class="container-fluid max-width main-padding">
+                        <div id="search_box" class="float-left">
+                            <?php echo @$search_widget;?>
+                        </div>
+                        <div class="float-right m-pagination">
+                            <?php echo @$pagination;?>
+                        </div>
+                    </div>
+                </section>
+                <section class="container-fluid max-width">
+                    <div data-id="breadcrumbs" style="padding-left:10px;padding-right:10px">
+                        <?php echo @$breadcrumbs;?>
+                    </div>
+                </section>
+                <section id="category_thumbs_display" class="container-fluid max-width">
+                    <?php echo @$category_thumbs;?>
+                </section>
+                <section id="thumbs_display" class="container-fluid max-width">
+                    <div class="clearfix" data-id="thumbs">
+                        <!-- Result -->
+                            <?php echo @$thumbs; ?>
+                        <!-- /Result -->
+                    </div>
+                    <div class="ajax-loader" data-id="loading">
+                        <div><i class="fa fa-refresh fa-2x rotating"></i></div>
+                    </div>
+                </section>
+                <section id="bottom_bar">
+                    <div class="container-fluid max-width main-padding">
+                        <div class="float-right m-pagination">
+                            <!-- <?php echo @$pagination;?> -->
+                        </div>
+                    </div>
+                </section>
+            </div>
+        </main>
+    </div>
+    <footer>
+
+    </footer>
+    <!-- Modals -->
+    <div class="modal" id="modal_favorites" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">My Favorites</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row favorite-thumbs" data-id="contents">
+                        <div class="favorites-loading"><img src="/assets/img/hourglass.gif" /></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal" id="modal_video" role="dialog">
+        <div class="modal-dialog modal-lg" role="document">
+            <div class="modal-content">
+                <div class="modal-body">
+                    <div data-id="container">
+                        <div class="title">Title</div>
+                        <video id="modal_video_player" class="video-js vjs-default-skin">
+                            <source src="" type="video/mp4">
+                        </video>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- /Modals -->
+    <!-- Main Libs -->
+    <script src="<?php echo base_url();?>assets/libs/jquery/jquery-2.2.4.min.js"></script>
+    <script src="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.js"></script>
+    <!-- Plugins -->
+    <script src="<?php echo base_url();?>assets/plugins/toastr/toastr.min.js"></script>
+    <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
+    <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
+    <script src="<?php echo base_url();?>assets/js/video-modal.js"></script>
+    <script src="<?php echo base_url();?>assets/js/frontend-app.js"></script>
+    <script>
+        $(document).ready(function(){
+            favorites.init();
+            results.init();
+            $(window).scroll(function (event) {
+            var scroll = $(window).scrollTop();
+                var isFixedTopbar = false;
+                if(scroll > 43) {
+                    isFixedTopbar = true;
+                }
+                if(isFixedTopbar){
+                    $("header").addClass("fixed-top");
+                    $("#search_bar").addClass("fixed-top");
+                    $("#thumbs_display").addClass("scrolling-top");
+                }
+                else{
+                    $("header").removeClass("fixed-top");
+                    $("#search_bar").removeClass("fixed-top");
+                    $("#thumbs_display").removeClass("scrolling-top");
+                }
+            });
+        });
+    </script>
+    <?php echo @$result_js_init;?>
+</body>
+</html>

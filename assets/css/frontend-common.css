@@ -1,0 +1,389 @@
+/* Global */
+html,body {
+    height: 100%;
+}
+#page_wrapper {
+    min-height: 100%;
+    height: auto;
+    padding-bottom: 40px;
+    margin-bottom: -40px;
+}
+footer {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    display: block;
+}
+.float-left {float: left;}
+.float-right {float: right;}
+.display-none {display: none !important;}
+.max-width {
+    max-width: 1200px;
+}
+.main-padding {
+    padding: 15px 20px;
+}
+:focus {
+    outline: none !important;
+    box-shadow: none !important;
+    transition: none !important;
+    border-color: #ccc !important;
+}
+.clearfix:before {
+    content: "";
+    display: table;
+}
+.clearfix:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+ol.breadcrumb a.active {
+    color: #555;
+    text-decoration: none;
+}
+
+/* Animations */
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes slide_left {
+    from {
+        opacity: 0;
+        transform: translateX(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+}
+@keyframes slide_right {
+    from {
+        opacity: 0;
+        transform: translateX(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0%);
+    }
+}
+@keyframes slide_top {
+    from {
+        opacity: 0;
+        transform: translateY(100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+}
+@keyframes slide_bottom {
+    from {
+        opacity: 0;
+        transform: translateY(-100%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0%);
+    }
+}
+.rotating {
+  -webkit-animation: rotating 1s linear infinite;
+  -moz-animation: rotating 1s linear infinite;
+  -ms-animation: rotating 1s linear infinite;
+  -o-animation: rotating 1s linear infinite;
+  animation: rotating 1s linear infinite;
+}
+
+/* Favorites Modal */
+.favorite-thumbs {
+    padding-left: 10px;
+    padding-right: 10px;
+    margin-bottom: -10px;
+}
+.favorite-thumbs .favorites-loading {
+    width: 100%;
+    height: 155px;
+    line-height: 150px;
+    text-align: center;
+}
+.favorite-thumbs .favorites-loading img {
+    border: none;
+}
+.favorite-thumbs .item {
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-bottom: 10px;
+    position: relative;
+}
+.favorite-thumbs .item > a {
+    width: 100%;
+    height: auto;
+    padding-bottom: 75%;
+    background-color: #eee;
+    display: block;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: cover;
+}
+.favorite-thumbs .item .controls {
+    font-size: 1.5em;
+    position: absolute;
+    top: 5px;
+    right: 10px;
+}
+.favorite-thumbs .item .controls > a {
+    cursor: pointer;
+    color: rgba(255,255,255,0.8);
+    padding: 5px;
+    background-color: rgba(0,0,0,0.8);
+    border-radius: 4px;
+}
+.favorite-thumbs .item .controls > a span {
+    top: 3px;
+}
+.favorite-thumbs .item .controls > a:hover {
+    color: rgba(255,0,0,1);
+}
+body.loading {
+    overflow: hidden;
+}
+
+/* Global - Components */
+.ajax-loader {
+    display: none;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(255,255,255,0.8);
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    text-align: center;
+}
+.ajax-loader > div {
+    display: inline-block;
+    padding: 10px 15px;
+    border: 1px solid #555555;
+    margin-top: 150px;
+    border-radius: 4px;
+}
+
+/* Header */
+header {
+    color: rgba(255,255,255,0.8);
+    background-color: #303030;
+    position: relative;
+}
+header.fixed-top {
+    width: 100%;
+    height: auto;
+    position: fixed;
+    top: -46px;
+    left: 0;
+    z-index: 999;
+}
+header a {
+    color: rgba(255,255,255,0.8);
+    cursor: pointer;
+}
+header a:hover {
+    color: #35b4f7;
+    text-decoration: none;
+    transition: color 300ms;
+}
+header #top_bar {
+    height: 48px;
+    z-index: 9;
+}
+header #logo {
+    display: inline-block;
+    font-size: 1.5em;
+    position: absolute;
+    left: 20px;
+    top: 0;
+    height: 100%;
+    line-height: 48px;
+}
+header #actions {
+    position: absolute;
+    right: 20px;
+    top: 0;
+    height: 100%;
+    line-height: 48px;
+}
+header #actions ul {
+    margin-bottom: 0px;
+    padding-left: 0;
+}
+header #actions li {
+    list-style-type: none;
+    display: inline-block;
+}
+header .container-fluid {
+    position: relative;
+}
+header #actions li.hasmenu:hover > a {
+    color: #35b4f7;
+}
+header #actions li.hasmenu:hover > ul.submenu {
+    display: block;
+}
+header #actions ul.submenu {
+    display: none;
+    width: 100%;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background-color: white;
+    padding:5px 5px;
+    color: #555;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    animation: animSlideDown 300ms ease;
+    transform-origin: left top;
+}
+header #actions ul.submenu a {
+    padding: 5px 8px;
+    display: block;
+    color: #555555;
+}
+header #actions ul.submenu li {
+    line-height: 2.2;
+    display: block;
+    float: none;
+}
+header #actions ul.submenu li:hover a {
+    color: #333;
+    background-color: #f5f5f5;
+}
+header #actions ul.submenu:before {
+    content: "";
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-bottom-color: white;
+    position: absolute;
+    top: -16px;
+    left: 25px;
+}
+
+/* Main */
+main .category-thumb {
+    width: 100%;
+    padding-bottom: 75%;
+    background-color: #eee;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-size: cover;
+    border: 1px solid #eee;
+    position: relative;
+}
+main .category-thumb:hover .link-overlay {
+    display: block;
+}
+main .category-thumb .link-overlay {
+    position: absolute;
+    left: 0; top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.8);
+    display: none;
+}
+main .category-thumb .link-overlay .link-object {
+    width: 100%;
+    height: 100%;
+    display: table;
+}
+main .category-thumb .link-overlay .link-object > div {
+    display: table-cell;
+    text-align: center;
+    vertical-align: middle;
+}
+main .category-thumb .link-overlay .link-object .links {
+    height: 100%;
+    max-height: 75%;
+    width: 100%;
+    max-width: 56.25%;
+    display: table;
+    border-radius: 50%;
+    margin: auto;
+    overflow: hidden;
+}
+main .category-thumb .link-overlay .link-object a {
+    width: 100%;
+    height: 50%;
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    display: table;
+    transition: color 500ms ease;
+}
+main .category-thumb .link-overlay .link-object a span {
+    font-style: italic;
+    display: table-cell;
+}
+main .category-thumb .link-overlay .link-object a:hover {
+    
+}
+main .category-thumb .link-overlay .link-object a:first-child {
+    border-bottom: 1px solid rgba(255,255,255,0.5);
+}
+main .category-thumb .link-overlay .link-object a:first-child span {
+    vertical-align: bottom;
+    padding-bottom: 11px;
+    animation: slide_bottom 300ms ease;
+}
+main .category-thumb .link-overlay .link-object a:last-child span {
+    vertical-align: top;
+    padding-top: 10px;
+    animation: slide_top 300ms ease;
+}
+main .category-thumb .link-overlay .link-object a:hover {
+    color: #2fafef;
+}
+main .thumb-box .title {
+    text-align: center;
+    padding: 4px;
+}
+
+@keyframes animSlideDown {
+    from {transform:scaleY(0);}
+    to {transform:scaleY(1);}
+}
+footer {
+    color: #555;
+    background-color: #eee;
+    text-align: center;
+}
+footer:before {
+    content: "Copyright Gallery © 2016";
+}
