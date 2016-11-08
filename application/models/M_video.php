@@ -1,6 +1,6 @@
 <?php
 /**
-* CI model for images under Media Gallery project.
+* CI model for videos under Media Gallery project.
 * @package  Media Gallery
 * @author   Michael Erwin Virgines <michael.erwinp@gmail.com>
 *

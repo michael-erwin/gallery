@@ -29,6 +29,9 @@ class Search extends CI_Controller
                 $category_id = is_array($category_id)? end($category_id) : $category_id;
                 $this->fetch($type,trim($category_id));
             }
+            elseif($method == "tags") {
+                $this->fetchTags();
+            }
             else
             {
                 $this->fetch($method);
@@ -38,6 +41,23 @@ class Search extends CI_Controller
         {
             $this->fetch("images");
         }
+    }
+
+    private function fetchTags()
+    {
+        $keyword = $this->input->get('kw');
+        $response = [];
+        if($keyword)
+        {
+            $keyword = clean_title_text($keyword);
+            if(!empty($keyword)) {
+                $sql = "SELECT `name` FROM `tags` WHERE `name` LIKE '%{$keyword}%' ORDER BY `name` LIMIT 5";
+                $query = $this->db->query($sql);
+                $response = $query->result_array();
+            }
+        }
+        header("Content-Type: application/json");
+        echo json_encode($response);
     }
 
     private function fetch($type=null,$value=null)
@@ -114,15 +134,22 @@ class Search extends CI_Controller
             ]
         ];
 
+        $page_meta = [
+            'title' => 'Gallery - Search Results',
+            'description' => '',
+            'keywords' => ''
+        ];
+
         // Output types:
         if($mode && $mode == "json")
         {
+            $response['page_meta'] = $page_meta;
             header("Content-Type: application/json");
             echo json_encode($response);
         }
         else
         {
-            $this->index($response);
+            $this->index($response,$page_meta);
         }
     }
 
@@ -202,5 +229,35 @@ class Search extends CI_Controller
 
         $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
         $this->load->view("v_results_layout",$data);
+    }
+
+    private function formatSizeUnits($bytes)
+    {
+        if ($bytes >= 1073741824)
+        {
+            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+        }
+        elseif ($bytes >= 1048576)
+        {
+            $bytes = number_format($bytes / 1048576, 2) . ' MB';
+        }
+        elseif ($bytes >= 1024)
+        {
+            $bytes = number_format($bytes / 1024, 2) . ' kB';
+        }
+        elseif ($bytes > 1)
+        {
+            $bytes = $bytes . ' bytes';
+        }
+        elseif ($bytes == 1)
+        {
+            $bytes = $bytes . ' byte';
+        }
+        else
+        {
+            $bytes = '0 bytes';
+        }
+
+        return $bytes;
     }
 }

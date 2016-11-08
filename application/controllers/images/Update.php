@@ -5,6 +5,7 @@ class Update extends CI_Controller
     {
         parent::__construct();
         $this->load->model('m_image');
+        $this->load->model('m_tag');
     }
 
     public function _remap($method=null)
@@ -35,6 +36,7 @@ class Update extends CI_Controller
                 $response['status'] = "ok";
                 $response['message'] = "{$affected} image(s) updated.";
                 $response['debug_info']['affected_rows'] = $affected;
+                if(strlen($tags) > 2) $this->m_tag->add(explode(' ', $tags));
             }
             else
             {

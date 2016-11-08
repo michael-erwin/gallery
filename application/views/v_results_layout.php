@@ -28,10 +28,12 @@
                     <ul>
                         <li class="hasmenu">
                             <a>FAVORITES</a>
-                            <ul class="submenu" id="menu_favorites">
-                                <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
-                                <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
-                            </ul>
+                            <div class="box-wrapper">
+                                <ul class="submenu" id="menu_favorites">
+                                    <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
+                                    <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
+                                </ul>
+                            </div>
                         </li>
                         <li>&nbsp;|&nbsp;</li>
                         <li><a>SIGN IN</a></li>
@@ -69,6 +71,9 @@
                         <div><i class="fa fa-refresh fa-2x rotating"></i></div>
                     </div>
                 </section>
+                <section id="media_item_display" class="container-fluid max-width media-item-display">
+                    <?php echo @$media_item_details;?>
+                </section>
                 <section id="bottom_bar">
                     <div class="container-fluid max-width main-padding">
                         <div class="float-right m-pagination">
@@ -83,8 +88,8 @@
 
     </footer>
     <!-- Modals -->
-    <div class="modal" id="modal_favorites" role="dialog">
-        <div class="modal-dialog modal-lg" role="document">
+    <div class="modal" id="modal_favorites">
+        <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
@@ -92,7 +97,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row favorite-thumbs" data-id="contents">
-                        <div class="favorites-loading"><img src="/assets/img/hourglass.gif" /></div>
+                        <div class="favorites-loading"><img src="<?php echo base_url();?>assets/img/hourglass.gif" /></div>
                     </div>
                 </div>
             </div>
@@ -104,13 +109,65 @@
                 <div class="modal-body">
                     <div data-id="container">
                         <div class="title">Title</div>
-                        <video id="modal_video_player" class="video-js vjs-default-skin">
-                            <source src="" type="video/mp4">
+                        <video id="modal_video_player" preload="none" class="video-js vjs-default-skin">
+                            <source type="video/mp4">
                         </video>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    <div class="modal" id="modal_media_details">
+        <div class="modal-dialog modal-fluid">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">Media Information</h4>
+                </div>
+                <div class="modal-body media-item-display loading">
+                    <div class="row" data-id="contents">
+                        <div class="col-xs-12 col-sm-8 media-block">
+                            <div class="media">
+                                <video id="video_item_object" preload="none" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup='{"fluid":true}'>
+                                  <source src=" " type="video/mp4" />
+                                </video>
+                                <img id="image_item_object">
+                                <div class="display-options">
+                                    <span class="display-options-icon fullscreen" title="Fullscreen"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xs-12 col-sm-4 info-block">
+                            <div class="info">
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr><th colspan="2">Details</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>Title</td><td>&nbsp;</td></tr>
+                                        <tr><td>Description</td><td>&nbsp;</td></tr>
+                                        <tr><td>Dimension</td><td>&nbsp;</td></tr>
+                                        <tr><td>File size</td><td>&nbsp;</td></tr>
+                                    </tbody>
+                                </table>
+                                <table class="table table-bordered">
+                                    <thead>
+                                        <tr><th>Tags</th></tr>
+                                    </thead>
+                                    <tbody>
+                                        <tr><td>&nbsp;</td></tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div id="image_fullscreen" class="fs-window">
+        <div class="display-content"></div>
+        <div class="exit-btn" title="Exit"></div>
     </div>
     <!-- /Modals -->
     <!-- Main Libs -->
@@ -120,12 +177,15 @@
     <script src="<?php echo base_url();?>assets/plugins/toastr/toastr.min.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
-    <script src="<?php echo base_url();?>assets/js/video-modal.js"></script>
+    <!-- <script src="<?php echo base_url();?>assets/js/video-modal.js"></script> -->
     <script src="<?php echo base_url();?>assets/js/frontend-app.js"></script>
+    <script src="<?php echo base_url();?>assets/js/search-hint.js"></script>
     <script>
+        var site = {base_url:"<?php echo base_url();?>"}
         $(document).ready(function(){
             favorites.init();
             results.init();
+
             $(window).scroll(function (event) {
             var scroll = $(window).scrollTop();
                 var isFixedTopbar = false;
@@ -143,6 +203,7 @@
                     $("#thumbs_display").removeClass("scrolling-top");
                 }
             });
+            $('form[action="search"] [name="kw"]').searchHint();
         });
     </script>
     <?php echo @$result_js_init;?>

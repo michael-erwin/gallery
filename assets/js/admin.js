@@ -28,25 +28,27 @@ admin_page.content =
     get: function(e, ob = null) {
         e.preventDefault();
         if(!ob) var ob = this;
-        var url_clean = ob.hostname+ob.pathname;
+        var url_clean = ob;
+        //var url_clean = site.base_url+'/admin';
         var url_pieces = ob.pathname.split('/admin');
+        console.log(ob.pathname);
         var url_hash = url_pieces[url_pieces.length-1];
         $.ajax({
             method: "get",
-            url: '//'+url_clean+'/json',
+            url: url_clean+'/json',
             error: function(jqXHR,textStatus,errorThrown){
                 toastr["error"]("Failed to load content.", "Error "+jqXHR.status);
             },
             success: function(response){
                 if(response.page_title){
                     //top.location.hash = url_hash;
-                    history.pushState(null, null, '/admin'+url_hash);
+                    history.pushState(null, null, ob.pathname);
                     admin_page.sidebar.selectMenu(response.sidebar_menus);
                     admin_page.content.setTitle({"text":response.page_title,"small":response.page_description});
                     admin_page.content.setBreadCrumb(response.breadcrumbs);
                     admin_page.content.setBody(response.content);
                     admin_page.content.setObjects(response.objects);
-                    var script = '//'+url_clean+'/js';
+                    var script = ob.pathname+'/js';
                     try {
                         $.getScript(script);
                     }
@@ -208,6 +210,7 @@ admin_app.uploader =
             e.stopPropagation();
             e.preventDefault();
         });
+        this.render();
     },
     render: function() {
         var remove_indexes = [];
@@ -226,6 +229,8 @@ admin_app.uploader =
         for(var n=remove_indexes.length-1; n>=0; n--) {
             this.objects.files.splice(remove_indexes[n],1);
         }
+        // Set media type selection.
+        this.objects.media_type_box.val(this.data.media_type);
     },
     setMedia: function() {
         this.data.media_type = this.objects.media_type_box.val();
@@ -1430,7 +1435,7 @@ admin_app.library =
             if(this.objects.active_search) this.objects.active_search.abort();
             this.objects.active_search = $.ajax({
                 type: "get",
-                url: "/search/"+this.data.type,
+                url: site.base_url+"/search/"+this.data.type,
                 context: this,
                 data: data,
                 dataType: "json",

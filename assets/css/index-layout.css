@@ -49,6 +49,35 @@ main #cta_block .foreground .search_action {
     border-radius: 4px;
     display: inline-block;
 }
+main #cta_block .foreground .search_action .search-hint-box {
+    display: block;
+    position: absolute;
+    top: 100%;
+    left: 0px;
+    background-color: rgba(255,255,255,0.8);
+    max-width: 324px;
+    width: 100%;
+    border-top: 1px solid rgba(0,0,0,0.2);
+    display: none;
+}
+main #cta_block .foreground .search_action .search-hint-box.active {
+    display: block;
+}
+main #cta_block .foreground .search_action .search-hint-box ul {
+    padding-left: 0;
+    background-color: transparent;
+    list-style-type: none;
+    margin-bottom: 0;
+    border: 1px solid transparent;
+}
+main #cta_block .foreground .search_action .search-hint-box ul li {
+    padding: 5px 10px;
+    text-align: left;
+}
+main #cta_block .foreground .search_action .search-hint-box ul li.active {
+    color: white;
+    background-color: rgba(0,0,0,0.5);
+}
 main #cta_block .foreground .search_action_container {
     width: 100% !important;
     display: table;
@@ -87,6 +116,9 @@ main #cta_block .foreground .search_action .media-type ul {
     margin: 0;
     background-color: rgba(255,255,255,0.8);
     display: none;
+    border: 1px solid transparent;
+    border-top: 1px solid rgba(0,0,0,0.2);
+    padding-top: 1px;
 }
 main #cta_block .foreground .search_action .media-type li a {
     text-decoration: none;

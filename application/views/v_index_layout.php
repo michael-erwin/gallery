@@ -23,10 +23,12 @@
                     <ul>
                         <li class="hasmenu">
                             <a>FAVORITES</a>
-                            <ul class="submenu" id="menu_favorites">
-                                <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
-                                <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
-                            </ul>
+                            <div class="box-wrapper">
+                                <ul class="submenu" id="menu_favorites">
+                                    <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
+                                    <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
+                                </ul>
+                            </div>
                         </li>
                         <li>&nbsp;|&nbsp;</li>
                         <li><a>SIGN IN</a></li>
@@ -42,7 +44,7 @@
                         <form id="search_action_form">
                             <div class="search_action_container">
                                 <input type="hidden" name="type" value="images">
-                                <input type="text" name="kw" placeholder="Search for images">
+                                <input type="text" name="kw" placeholder="Search for images" autocomplete="off">
                                 <span class="separator"></span>
                                 <div id="media_type_box" class="media-type" tabindex="1">
                                     <div id="search_type"><span class="text">Images</span> <span class="caret"></span></div>
@@ -53,6 +55,7 @@
                                 </div>
                                 <button><i class="fa fa-search"></i></button>
                             </div>
+                            <div id="search_hint_box" class="search-hint-box"></div>
                         </form>
                     </div>
                 </div>
@@ -81,7 +84,7 @@
                 </div>
                 <div class="modal-body">
                     <div class="row favorite-thumbs" data-id="contents">
-                        <div class="favorites-loading"><img src="/assets/img/hourglass.gif" /></div>
+                        <div class="favorites-loading"><img src="<?php echo base_url();?>assets/img/hourglass.gif" /></div>
                     </div>
                 </div>
             </div>
@@ -92,8 +95,10 @@
     <script src="<?php echo base_url();?>assets/libs/jquery/jquery-2.2.4.min.js"></script>
     <script src="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.js"></script>
     <!-- Plugins -->
+    <script src="<?php echo base_url();?>assets/js/search-hint.js"></script>
     <script src="<?php echo base_url();?>assets/js/frontend-app.js"></script>
     <script>
+        var site = {base_url:"<?php echo base_url();?>"}
         $(document).ready(function(){
             favorites.init();
             $("#media_type_box a").click(function(){
@@ -104,9 +109,10 @@
             });
             $("#search_action_form").submit(function(e){
                 e.preventDefault();
-                var action_url = location.protocol+'//'+location.host+'/search/'+$("#search_action_form [name=\"type\"]").val()+'?kw='+encodeURIComponent($("#search_action_form [name=\"kw\"]").val());
+                var action_url = site.base_url+'search/'+$("#search_action_form [name=\"type\"]").val()+'?kw='+encodeURIComponent($("#search_action_form [name=\"kw\"]").val());
                 location = action_url;
             });
+            $('#search_action_form [name="kw"]').searchHint();
         });
     </script>
     <?php echo @$result_js_init;?>

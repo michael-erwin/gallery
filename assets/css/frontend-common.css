@@ -8,12 +8,6 @@ html,body {
     padding-bottom: 40px;
     margin-bottom: -40px;
 }
-footer {
-    width: 100%;
-    height: 40px;
-    line-height: 40px;
-    display: block;
-}
 .float-left {float: left;}
 .float-right {float: right;}
 .display-none {display: none !important;}
@@ -41,6 +35,24 @@ footer {
 ol.breadcrumb a.active {
     color: #555;
     text-decoration: none;
+}
+
+/* Bootstrap Reset */
+.btn-default {
+    border-color: #cccccc;
+}
+.modal-content {
+    border-radius: 0px;
+}
+.modal-dialog.modal-fluid {
+    width:  100% !important;
+    max-width: 1200px;
+    padding: 15px;
+    margin-left: auto;
+    margin-right: auto;
+}
+.modal-fuid .modal-content {
+    width: 100% !important;
 }
 
 /* Animations */
@@ -116,12 +128,130 @@ ol.breadcrumb a.active {
         transform: translateY(0%);
     }
 }
+@keyframes slide_down {
+    from {
+        opacity: 0;
+        transform: translateY(50%);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(100%);
+    }
+}
+@keyframes fadeIn {
+    from {opacity: 0}
+    to {opacity: 1}
+}
 .rotating {
   -webkit-animation: rotating 1s linear infinite;
   -moz-animation: rotating 1s linear infinite;
   -ms-animation: rotating 1s linear infinite;
   -o-animation: rotating 1s linear infinite;
   animation: rotating 1s linear infinite;
+}
+
+/* Media Item Display */
+.media-item-display.loading table td,
+.media-item-display.loading table th {
+    color: transparent;
+}
+.media-item-display.loading .media {
+    background-color: #eeeeee;
+}
+.media-item-display.loading .media img,
+.media-item-display.loading .media .video-js,
+.media-item-display.loading .info .label
+ {
+    display: none;
+}
+.media-item-display .row {
+    padding-left: 20px;
+    padding-right: 20px;
+}
+.media-item-display .row > div {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+.media-item-display .media-block {
+    margin-bottom: 10px;
+}
+.media-item-display .media {
+    min-height: 271px;
+    padding: 10px;
+    text-align: center;
+    border: 1px solid #dddddd;
+    position: relative;
+}
+.media-item-display .media.media-image {
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-image: url('../img/hourglass.gif');
+}
+.media-item-display .media.media-image img {
+    display: none;
+    max-width: 100%;
+    max-height: 550px;
+}
+.media-item-display .media .video-js,
+.media-item-display .media img,
+.media-item-display .media .display-options,
+.media-item-display .media.media-image .video-js,
+.media-item-display .media.media-video img,
+.media-item-display .media.media-video .display-options {
+    display: none;
+}
+.media-item-display .media.media-image.loaded img,
+.media-item-display .media.media-image.loaded:hover .display-options {
+    display: inline-block;
+}
+.media-item-display .media.media-image .display-options {
+    position: absolute;
+    right: 15px;
+    top: 15px;
+    display: none;
+}
+
+.media-item-display .media.media-image .display-options > span {
+    font-size: 20px;
+    font-family: 'Glyphicons Halflings';
+    padding: 2px 4px;
+    color: rgba(255,255,255,0.7);
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.media-item-display .media.media-image .display-options > span:hover {
+    color: rgba(255,255,255,0.9);
+    background-color: rgba(0,0,0,0.7);
+}
+.media-item-display .media.media-image .display-options .fullscreen:before {
+    display: inline;
+    content: "\e140";
+}
+.media-item-display .media.media-video {
+    position: relative;
+    width: 100%;
+    padding-bottom: 56.25%;
+}
+.media-item-display .media.media-video .video-js {
+    width: calc(100% - 20px);
+    height: calc(100% - 20px);
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: block;
+}
+.media-item-display .info .table {
+    margin-bottom: 10px;
+}
+.media-item-display .info .table th {
+    border-bottom: 0;
+    background-color: #f5f5f5;
+}
+.media-item-display .info .table td:first-child {
+    width: 100px;
 }
 
 /* Favorites Modal */
@@ -154,25 +284,34 @@ ol.breadcrumb a.active {
     background-repeat: no-repeat;
     background-position: center center;
     background-size: cover;
+    opacity: 0.9;
+}
+.favorite-thumbs .item:hover > a {
+    opacity: 1;
+}
+.favorite-thumbs .item:hover .controls {
+    display: block;
 }
 .favorite-thumbs .item .controls {
-    font-size: 1.5em;
+    font-size: 15px;
     position: absolute;
     top: 5px;
     right: 10px;
+    display: none;
 }
 .favorite-thumbs .item .controls > a {
     cursor: pointer;
-    color: rgba(255,255,255,0.8);
-    padding: 5px;
-    background-color: rgba(0,0,0,0.8);
-    border-radius: 4px;
+    color: rgba(255,255,255,0.5);
+    padding: 4px;
+    background-color: rgba(0,0,0,0.6);
+    border-radius: 2px;
 }
 .favorite-thumbs .item .controls > a span {
-    top: 3px;
+    top: 2px;
 }
 .favorite-thumbs .item .controls > a:hover {
-    color: rgba(255,0,0,1);
+    color: rgba(255,255,255,0.8);
+    background-color: rgba(0,0,0,0.8);
 }
 body.loading {
     overflow: hidden;
@@ -198,9 +337,46 @@ body.loading {
     border-radius: 4px;
 }
 
+/* Global - Fullscreen Widget */
+.fs-window {
+    position: fixed;
+    background-color: black;
+    width: 100%;
+    height: 100%;
+    text-align: center;
+}
+.fs-window .display-content {
+    display: inline-block;
+    margin: auto;
+    vertical-align: middle;
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+.fs-window .exit-btn {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+    font-size: 20px;
+    font-family: 'Glyphicons Halflings';
+    padding: 2px 5px;
+    color: rgba(255,255,255,0.5);
+    background-color: rgba(0,0,0,0.5);
+    border-radius: 2px;
+    cursor: pointer;
+    margin-left: 5px;
+}
+.fs-window .exit-btn:hover {
+    color: rgba(255,255,255,0.7);
+    background-color: rgba(0,0,0,0.7);
+}
+.fs-window .exit-btn:before {
+    content: "\e014";
+}
+
 /* Header */
 header {
-    color: rgba(255,255,255,0.8);
+    color: rgba(255,255,255,0.5);
     background-color: #303030;
     position: relative;
 }
@@ -255,21 +431,33 @@ header .container-fluid {
 header #actions li.hasmenu:hover > a {
     color: #35b4f7;
 }
-header #actions li.hasmenu:hover > ul.submenu {
-    display: block;
-}
-header #actions ul.submenu {
-    display: none;
-    width: 100%;
+header #actions li.hasmenu > div.box-wrapper
+{
+    width:100%;
+    overflow: hidden;
     position: absolute;
     top: 100%;
     left: 0;
-    background-color: white;
+    display: none;
+    animation-name: makeShadow;
+    animation-duration: 300ms;
+    animation-delay: 300ms;
+    animation-fill-mode: forwards;
+}
+header #actions li.hasmenu:hover > div.box-wrapper {
+    display: block;
+}
+@keyframes makeShadow {
+    to{overflow: hidden;box-shadow: none}
+    to{overflow: visible;box-shadow: 1px 1px 10px 2px rgba(0, 0, 0, 0.3);}
+}
+header #actions ul.submenu {
+    width: 100%;
+    background-color: rgba(255,255,255,0.8);
     padding:5px 5px;
     color: #555;
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
     border-radius: 2px;
-    animation: animSlideDown 300ms ease;
+    animation: slide_bottom 300ms ease;
     transform-origin: left top;
 }
 header #actions ul.submenu a {
@@ -284,14 +472,14 @@ header #actions ul.submenu li {
 }
 header #actions ul.submenu li:hover a {
     color: #333;
-    background-color: #f5f5f5;
+    background-color: rgba(150,150,150,0.5);
 }
 header #actions ul.submenu:before {
     content: "";
     width: 0;
     height: 0;
     border: 8px solid transparent;
-    border-bottom-color: white;
+    border-bottom-color: rgba(255,255,255,0.8);
     position: absolute;
     top: -16px;
     left: 25px;
@@ -374,12 +562,13 @@ main .thumb-box .title {
     text-align: center;
     padding: 4px;
 }
-
-@keyframes animSlideDown {
-    from {transform:scaleY(0);}
-    to {transform:scaleY(1);}
-}
 footer {
+
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    display: block;
+
     color: #555;
     background-color: #eee;
     text-align: center;

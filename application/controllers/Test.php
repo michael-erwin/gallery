@@ -8,13 +8,16 @@ class Test extends CI_Controller
     function __construct()
     {
         parent::__construct();
-        $this->load->library('SimpleImage');
+        $this->load->model("m_tag");
     }
 
     public function _remap($type="")
     {
-        header("Content-Type: text/plain");
-        $reply = ($type == "images")? "Your request is valid for image." : "Your request is something else.";
-        echo $reply;
+        $tags = $this->input->get('tags');
+        if($tags) {
+            $tags = explode(' ', $tags);
+            header("Content-Type: text/plain");
+            print_r($this->m_tag->add($tags));
+        }
     }
 }

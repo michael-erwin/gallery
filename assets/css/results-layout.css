@@ -13,12 +13,38 @@ main #search_bar.fixed-top {
     position: fixed;
     top: 2px;
     left: 0;
-    background-color: rgba(20,20,20,0.5);
+    background-color: rgba(240,240,240,0.8);
     z-index: 999;
 }
 main #search_bar.fixed-top .of-pages {
-    text-shadow: 0px 0px 1px black;
-    color: white;
+    color: #555;
+}
+main #search_hint_box {
+    display: none;
+    position: absolute;
+    width: calc(100% - 2px);
+    max-width: 176px;
+    left: 1px;
+    top: 100%;
+    background-color: white;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.5);
+    border-radius: 2px;
+    z-index: 1;
+}
+main #search_hint_box ul {
+    list-style-type: none;
+    padding-left: 0;
+    margin-bottom: 0;
+    border: 1px solid transparent;
+}
+main #search_hint_box ul li {
+    padding: 5px 10px;
+}
+main #search_hint_box ul li.active {
+    background-color: #efefef;
+}
+main #search_hint_box.active {
+    display: block;
 }
 main #search_box {
     max-width: 300px;
@@ -72,10 +98,11 @@ main #search_box .search-types a[rel='dropdown-link']:before {
     top: 2;
 }
 main #search_box .search-types ul {
+    width: 83px;
     list-style-type: none;
     position: absolute;
-    top: 40px;
-    left: 0px;
+    top: calc(100% + 1px);
+    left: 2px;
     padding-left: 0;
     z-index: 5;
     background-color: white;
@@ -84,7 +111,7 @@ main #search_box .search-types ul {
     display: none;
 }
 main #search_box .search-types ul li {
-    min-width: 85px;
+    width: 100%;
     cursor: pointer;
 }
 main #search_box .search-types ul li:first-child {

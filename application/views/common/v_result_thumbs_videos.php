@@ -1,6 +1,6 @@
 <div class="thumb-box col-md-3 col-sm-4 col-xs-6">
-    <div class="thumb" data-data='<?php echo $data;?>' data-media="video">
-        <a title="<?php echo $title;?>" class="image-link video-preview" href="<?php echo base_url();?>videos/preview/<?php echo $seo_title;?>" style="background-image:url('<?php echo base_url();?>media/videos/public/128/<?php echo $uid;?>.jpg')">
+    <div class="thumb" data-data='<?php echo preg_replace("/'/", '', $data);?>' data-media="video">
+        <a title="<?php echo $title;?>" class="image-link video-preview" href="<?php echo base_url();?>videos/item/<?php echo $seo_title;?>" style="background-image:url('<?php echo base_url();?>media/videos/public/128/<?php echo $uid;?>.jpg')">
             <img src="<?php echo base_url();?>media/videos/public/128/<?php echo $uid;?>.jpg" />
         </a>
         <div class="title">
