@@ -6,3 +6,5 @@
 !*/cache/.htaccess
 */config/database.php
 media/
+build/
+node_modules/
