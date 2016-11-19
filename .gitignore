@@ -5,6 +5,7 @@
 !*/cache/index.html
 !*/cache/.htaccess
 */config/database.php
+*/config/config.php
 media/
 build/
 node_modules/
