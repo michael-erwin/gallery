@@ -6,7 +6,4 @@
 !*/cache/.htaccess
 */config/database.php
 */config/config.php
-!*/controllers/media
-media/
-build/
 node_modules/
