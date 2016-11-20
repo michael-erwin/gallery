@@ -1,0 +1,92 @@
+/* Effects */
+@keyframes blinking {
+  to {visibility: hidden;}
+}
+@keyframes spinning {
+    100% { transform: rotate(360deg); }
+}
+
+/* Common */
+.float-right {float:right}
+.float-left {float:left}
+.btn.active {
+    color: #555555;
+    background-color: #e7e7e7;
+    box-shadow: inset 0 3px 5px rgba(0, 0, 0, 0.125);
+    outline: 0;
+}
+
+/* Bootstrap Related */
+ol.breadcrumb a.active {
+    color: #555;
+    text-decoration: none;
+}
+.modal.common .modal-dialog {
+    max-width: 450px;
+}
+.modal.common .modal-header,
+.modal.common .modal-body,
+.modal.common .modal-footer {
+    padding: 15px;
+}
+.modal.common .btn {
+    padding: 5px;
+    min-width: 70px;
+}
+.form-control.error {
+    border-color: red;
+}
+
+/* Toolbar Area. */
+.content-toolbar {margin-bottom: 18px;}
+.content-toolbar .btn-control {
+    border-radius: 0px;
+    vertical-align: top;
+    background-color: white;
+    border-color: #d2d6de;
+}
+.content-toolbar select {
+    display: inline-block;
+    width: auto;
+}
+.content-toolbar .control-left {float: left;}
+.content-toolbar .form-control {padding: 0px 8px;}
+.content-toolbar .control-right,
+.content-toolbar .toolbar-search [data-id="search_box"] {float: right;}
+.content-toolbar .toolbar-search {
+    max-width: 250px;
+    position: relative;
+}
+.content-toolbar .toolbar-search [data-id="search_box"]:focus {
+    width: 250px;
+    transition: width 300ms ease-out;
+    -webkit-transition: width 300ms ease-out;
+}
+.content-toolbar .toolbar-search [data-id="search_btn"] {
+    height: 30px;
+    position: absolute;
+    right: 0px;
+    top: 0px;
+    border-style: none;
+    padding: 0px 12px;
+    background-color: transparent;
+}
+
+/* Content Area */
+.content .table {background-color: white;}
+.content-block {margin-bottom: 7.5px;}
+.content-block .alert {margin-bottom: 0;}
+.content-box {
+    padding: 8px;
+    background-color: white;
+    box-shadow: 0px 1px 1px 0px rgba(0,0,0,0.3);
+}
+
+/* Pagination */
+.m-pagination {white-space: nowrap;}
+.m-pagination .index {width: 50px;}
+.m-pagination .index,
+.m-pagination button {
+    display: inline-block;
+    vertical-align: middle;
+}

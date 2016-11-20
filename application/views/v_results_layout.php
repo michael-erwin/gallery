@@ -10,10 +10,7 @@
     <link rel="stylesheet" href="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.css" />
     <link rel="stylesheet" href="<?php echo base_url();?>assets/libs/font-awesome/css/font-awesome.min.css" />
     <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/toastr/toastr.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable.css" />
-    <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable-theme.css" />
     <link rel="stylesheet" href="<?php echo base_url();?>assets/plugins/videojs/video-js.min.css" />
-    <link rel="stylesheet" href="<?php echo base_url();?>assets/css/video-modal.css" />
     <link rel="stylesheet" href="<?php echo base_url();?>assets/css/frontend-common.css" />
     <link rel="stylesheet" href="<?php echo base_url();?>assets/css/results-layout.css" />
 </head>
@@ -133,7 +130,7 @@
                                 </video>
                                 <img id="image_item_object">
                                 <div class="display-options">
-                                    <span class="display-options-icon fullscreen" title="Fullscreen"></span>
+                                    <span class="display-options-icon overlay-ctrl-btn fullscreen" title="Fullscreen"></span>
                                 </div>
                             </div>
                         </div>

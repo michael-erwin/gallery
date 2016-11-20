@@ -93,7 +93,7 @@ var results = {
                 m: 'json'
             };
         }
-        //this.document.animate({scrollTop: "0px"},300,(function(){ 
+        //this.document.animate({scrollTop: "0px"},300,(function(){
         $.ajax({
             type: "get",
             url: get_url,
@@ -493,7 +493,7 @@ var favorites = {
                             '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data.id+'">'+
                                 '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data.uid+'.jpg)"></a>'+
                                 '<div class="controls">'+
-                                    '<a class="remove-button" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
+                                    '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                 '</div>'+
                             '</div>';
                         }
@@ -504,12 +504,12 @@ var favorites = {
                                 '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data[x].id+'">'+
                                     '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data[x].uid+'.jpg)"></a>'+
                                     '<div class="controls">'+
-                                        '<a class="remove-button" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
+                                        '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                     '</div>'+
                                 '</div>';
                             }
                         }
-                            
+
                         this.objects.modal_body.html(thumbs);
                         this.objects.modal_body.find("a.remove-button").unbind("click").click(this.remove.bind(this));
                         this.objects.modal.modal('show');
@@ -536,7 +536,7 @@ var favorites = {
                             '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="video" data-id="'+data.id+'">'+
                                 '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'videos/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/videos/public/128/'+data.uid+'.jpg)"></a>'+
                                 '<div class="controls">'+
-                                    '<a class="remove-button" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
+                                    '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                 '</div>'+
                             '</div>';
                         }
@@ -547,12 +547,12 @@ var favorites = {
                                 '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="video" data-id="'+data[x].id+'">'+
                                     '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'videos/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/videos/public/128/'+data[x].uid+'.jpg)"></a>'+
                                     '<div class="controls">'+
-                                        '<a class="remove-button" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
+                                        '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                     '</div>'+
                                 '</div>';
                             }
                         }
-                            
+
                         this.objects.modal_body.html(thumbs);
                         this.objects.modal_body.find("a.remove-button").unbind("click").click(this.remove.bind(this));
                         this.objects.modal.modal('show');

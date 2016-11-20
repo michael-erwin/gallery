@@ -3,7 +3,7 @@
         <div class="media media-image">
             <img src="<?php echo @$image_url;?>">
             <div class="display-options">
-                <span class="display-options-icon fullscreen" title="Fullscreen"></span>
+                <span class="display-options-icon fullscreen overlay-ctrl-btn" title="Fullscreen"></span>
             </div>
         </div>
     </div>

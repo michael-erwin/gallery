@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta content="IE=edge" http-equiv="X-UA-Compatible">
-    <title>Admin</title>
+    <title>Gallery - Admin</title>
     <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
     <!-- Library Dependency -->
     <link href="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.css" rel="stylesheet">
@@ -14,13 +14,9 @@
     <link href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable.css" rel="stylesheet">
     <link href="<?php echo base_url();?>assets/plugins/fullsizable/css/jquery-fullsizable-theme.css" rel="stylesheet">
     <link href="<?php echo base_url();?>assets/plugins/videojs/video-js.min.css" rel="stylesheet">
-    <!-- Main Style -->
-    <link href="<?php echo base_url();?>assets/css/admin.css" rel="stylesheet">
-    <link href="<?php echo base_url();?>assets/css/admin-skin.css" rel="stylesheet">
-    <link href="<?php echo base_url();?>assets/css/video-modal.css" rel="stylesheet">
-    <!-- Common Resets -->
-    <link href="<?php echo base_url();?>assets/css/common.css" rel="stylesheet">
-    <link href="<?php echo base_url();?>assets/css/admin-components.css" rel="stylesheet">
+    <!-- Theme Style -->
+    <link href="<?php echo base_url();?>assets/css/theme.min.css" rel="stylesheet">
+    <link href="<?php echo base_url();?>assets/css/backend.min.css" rel="stylesheet">
     <!--
     <link href="<?php echo base_url();?>assets/plugins/pace/pace-minimal.css" rel="stylesheet">
     <script src="<?php echo base_url();?>assets/plugins/pace/pace.min.js"></script>
@@ -194,7 +190,7 @@
     <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
     <!-- Theme App -->
-    <script src="<?php echo base_url();?>assets/js/app.js"></script>
+    <script src="<?php echo base_url();?>assets/js/app.min.js"></script>
     <!-- Routine -->
     <script src="<?php echo base_url();?>assets/js/modals.js"></script>
     <script src="<?php echo base_url();?>assets/js/admin.js"></script>

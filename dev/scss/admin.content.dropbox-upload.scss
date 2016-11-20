@@ -1,0 +1,168 @@
+/* Dropbox Upload */
+#file_drop_box {
+    display: block;
+    width: 100%;
+    border: 3px dashed grey;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    text-align: center;
+    margin-bottom: 20px;
+    position: relative;
+}
+#file_drop_box * {
+    color: grey;
+}
+#file_drop_box h3 {
+    margin-top: 10px;
+}
+#file_drop_box .zone {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    cursor: pointer;
+}
+#file_drop_box.drag-over {
+    border-style: solid;
+}
+#file_list_box .media-item {
+    padding: 4px;
+    background-color: white;
+    border: 1px solid rgba(200,200,200,0.5);
+    border-top-style: none;
+}
+#file_list_box .media-item .item {
+    float: left;
+    position: relative;
+    line-height: 32px;
+    height: 32px;
+    overflow: hidden;
+}
+#file_list_box .media-item .control {
+    float: right;
+    position: relative;
+    line-height: 32px;
+    height: 32px;
+    overflow: hidden;
+}
+#file_list_box .media-item .pinkynail {
+    display: inline-block;
+    width: 32px;
+    height: 32px;
+    text-align: center;
+    background-position: center center;
+    background-size: cover;
+    position: relative;
+}
+#file_list_box .media-item .pinkynail .fa {
+    display: none;
+}
+#file_list_box .media-item span {
+    margin-left: 5px;
+    vertical-align: top;
+}
+#file_list_box .media-item a.btn {
+    width: 60px;
+    height: 32px;
+    line-height: 30px;
+    text-align: center;
+    vertical-align: top;
+    padding: 0;
+    margin-left: 5px;
+}
+#file_list_box .media-item .ul-progress-bar {
+    width: 120px;
+    height: 12px;
+    border: 1px solid rgba(0,0,0,0.2);
+    background-color: rgba(0,0,0,0.2);
+    line-height: 0;
+    margin-top: -2px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+#file_list_box .media-item .progress {
+    width: 0%;
+    height: 100%;
+    border: none;
+    background-color: white;
+    vertical-align: top;
+    display: inline-block;
+    line-height: 0;
+}
+/* Dropbox Upload - Loaded state */
+#file_list_box .media-item.completed .ul-progress-bar,
+#file_list_box .media-item.completed [data-control="abort"] {
+    display: none;
+}
+/* Dropbox Upload - Uploading state */
+#file_list_box .media-item.uploading i.fa {
+    display: inline;
+}
+#file_list_box .media-item.uploading.active i.fa {
+    color: #F39C12;
+    animation: blinking 1s steps(5, start) infinite;
+}
+#file_list_box .media-item.uploading i.fa:before {
+    content: "\f093";
+}
+#file_list_box .media-item.uploading [data-control="edit"],
+#file_list_box .media-item.uploading [data-control="delete"] {
+    display: none;
+}
+#file_list_box .media-item.uploading .ul-progress-bar,
+#file_list_box .media-item.uploading [data-control="abort"] {
+    display: inline-block;
+}
+/* Dropbox Upload - Converting state */
+#file_list_box .media-item.converting i.fa {
+    display: inline;
+}
+#file_list_box .media-item.converting.active i.fa {
+    color: #00A65A;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    margin-top: -7px;
+    margin-left: -8px;
+    animation: spinning 2.6s linear infinite !important;
+}
+#file_list_box .media-item.converting i.fa:before {
+    content: "\f01e";
+}
+#file_list_box .media-item.converting .control {
+    white-space: nowrap;
+}
+#file_list_box .media-item.converting .control:after {
+    content: "";
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
+#file_list_box .media-item.converting .ul-progress-bar {
+    border: 1px solid #178acc;
+    background-color: white;
+    display: inline-block;
+}
+#file_list_box .media-item.converting .progress {
+    background-color: #37a7e8;
+}
+#file_list_box .media-item.converting [data-control="abort"],
+#file_list_box .media-item.converting [data-control="edit"],
+#file_list_box .media-item.converting [data-control="delete"] {
+    display: none;
+}
+/* Dropbox Upload - Error state */
+#file_list_box .media-item.errored i.fa {
+    display: inline;
+}
+#file_list_box .media-item.errored i.fa:before {
+    content: "\f071";
+}
+#file_list_box .media-item.errored .ul-progress-bar,
+#file_list_box .media-item.errored .btn {
+    display: none;
+}
+#file_list_box .media-item.errored {
+    color: #f20;
+}
