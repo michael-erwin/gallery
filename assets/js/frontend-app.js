@@ -208,7 +208,6 @@ var results = {
         else if(this.data.route == "categories") {
             current_uri = site.base_url+'categories/'+this.data.category_name+'-'+this.data.category_id+'/'+this.data.type+'/'+this.data.page.current;
         }
-        console.log(current_uri);
         history.replaceState(null, null, current_uri);
         // Bind events.
         this.attachThumbActions();
@@ -306,7 +305,8 @@ var modal_media = {
                 image_page_box.objects.main_image.attr('src',image_link);
             }
             else if(type == "videos") {
-                var video_link = site.base_url+'videos/preview/'+(data.title).replace(' ','-')+'-'+data.uid;;
+                //var video_link = site.base_url+'videos/preview/'+(data.title).replace(' ','-')+'-'+data.uid;
+                var video_link = site.base_url+'media/videos/public/480p/'+data.uid+'.mp4';
                 var video_poster = site.base_url+'media/videos/public/480/'+data.uid+'.jpg';
                 this.objects.media_box.removeClass('media-image').addClass('media-video');
                 video_page_box.poster(video_poster);
