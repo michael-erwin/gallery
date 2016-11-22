@@ -39,7 +39,7 @@ admin_page.content =
     setBreadCrumb: function(crumbs) {
         if(crumbs) {
             var breadcrumbs = '';
-            for(var menu in crumbs) {
+            for(var menu=0;menu<crumbs.length;menu++) {
                 if(crumbs[menu].link != "") {
                     breadcrumbs += '<li><a onclick="admin_page.content.get(event,this)" href="'+crumbs[menu].link+'">'+crumbs[menu].text+'</a></li>';
                 }
