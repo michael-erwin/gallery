@@ -59,6 +59,22 @@ gulp.task('backend-js',function(){
     ]);
 });
 
+gulp.task('frontend-js',function(){
+    pump([
+        gulp.src([
+            'dev/js/frontend_app.utilities.js',
+            'dev/js/frontend_app.favorites.js',
+            'dev/js/frontend_app.results.js',
+            'dev/js/frontend_app.media_box.js',
+            'dev/js/frontend_app.modal_media.js',
+            'dev/js/frontend_app.image_page_box.js',
+            'dev/js/frontend_app.video_page_box.js'
+        ]),
+        strp(),gcat('frontend-app.js'),
+        gulp.dest('assets/js/')
+    ]);
+});
+
 gulp.task('watch',function(){
     gulp.watch(
         ['dev/js/*','dev/scss/*.scss'],
