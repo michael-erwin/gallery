@@ -288,13 +288,14 @@ admin_app.library =
                     for(var i=0;i<entries.length;i++) {
                         var video = entries[i];
                         var thumb = site.base_url+'media/videos/public/256/'+video.uid+'.jpg';
+                        var vlink = site.base_url+'media/videos/private/full_size/'+video.uid+'.mp4';
                         var selected = $.inArray(video.id,this.data.selected);
                         var item_class = (selected > -1)? "active" : "";
                         var checked = (selected > -1)? "checked" : "";
                         html +=
                         '<div class="media-entry thumb-box col-lg-2 col-md-3 col-sm-4 col-xs-6 '+item_class+'" data-id="'+video.id+'" data-category_id="'+video.category_id+'" data-title="'+video.title+'">'+
                             '<div class="thumb" >'+
-                                '<a href="'+site.base_url+'videos/view/fhd/'+video.uid+'" title="'+video.title+'" class="image-link media-item video-preview" style="background-image:url(\''+thumb+'\')">'+
+                                '<a href="'+vlink+'" title="'+video.title+'" class="image-link media-item video-preview" style="background-image:url(\''+thumb+'\')">'+
                                 '</a>'+
                                 '<div class="controls">'+
                                     '<b title="Move to category" data-id="move_category"><i class="fa fa-lg fa-exchange"></i></b>'+
@@ -312,6 +313,7 @@ admin_app.library =
                         for(var i=0;i<entries.length;i++) {
                             var video = entries[i];
                             var thumb = site.base_url+'media/videos/public/128/'+video.uid+'.jpg';
+                            var vlink = site.base_url+'media/videos/private/full_size/'+video.uid+'.mp4';
                             var selected = $.inArray(video.id,this.data.selected);
                             var item_class = (selected > -1)? "active" : "";
                             var checked = (selected > -1)? "checked" : "";
@@ -321,7 +323,7 @@ admin_app.library =
                                         '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+video.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                                     '</div>'+
                                     '<div class="image" style="background-image:url('+thumb+')">'+
-                                        '<a href="'+site.base_url+'videos/view/fhd/'+video.uid+'" title="'+video.title+'" class="video-preview">&nbsp;</a>'+
+                                        '<a href="'+vlink+'" title="'+video.title+'" class="video-preview">&nbsp;</a>'+
                                     '</div>'+
                                     '<div class="detail">'+
                                         '<div class="title"><a href="'+site.base_url+'videos/view/fhd/'+video.uid+'" title="'+video.title+'" class="video-preview">'+video.title+'</a></div>'+
