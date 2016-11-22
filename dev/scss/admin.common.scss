@@ -17,6 +17,7 @@
 }
 
 /* Bootstrap Related */
+.btn-default.active:hover {background-color: #e7e7e7;}
 ol.breadcrumb a.active {
     color: #555;
     text-decoration: none;
@@ -49,6 +50,8 @@ ol.breadcrumb a.active {
     display: inline-block;
     width: auto;
 }
+.content-toolbar select[data-id="bulk_operation_box"] {display: none;}
+.content-toolbar select[data-id="bulk_operation_box"].active {display: inline-block;}
 .content-toolbar .control-left {float: left;}
 .content-toolbar .form-control {padding: 0px 8px;}
 .content-toolbar .control-right,
@@ -60,7 +63,6 @@ ol.breadcrumb a.active {
 .content-toolbar .toolbar-search [data-id="search_box"]:focus {
     width: 250px;
     transition: width 300ms ease-out;
-    -webkit-transition: width 300ms ease-out;
 }
 .content-toolbar .toolbar-search [data-id="search_btn"] {
     height: 30px;

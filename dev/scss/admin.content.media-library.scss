@@ -1,10 +1,49 @@
+/* Common Custom UI */
+.media-entry .checkbox-ui {
+    width: 20px;
+    height: 20px;
+    display: inline-block;
+    padding: 0 !important;
+    margin-bottom: 0;
+    cursor: pointer;
+    font-size: 14px;
+    color: #333;
+    border-radius: 2px;
+    text-align: center;
+    cursor: pointer;
+    z-index: 9;
+}
+.media-entry .checkbox-ui input {display: none;}
+.media-entry .checkbox-ui input:checked + .glyphicon-ok {
+    position: relative;
+    top: 2px;
+    opacity: 1;
+}
+.media-entry .checkbox-ui .glyphicon-ok {opacity: 0;}
+.media-entry .no-interact {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;top: 0;
+    background-color: rgba(255,255,255,0);
+    display: none;
+}
+
 /* Item List View - Display of media items. */
-ul.list-box {
+[data-id="content"].bulk_select_mode .list-box .list {background-color: rgba(255,255,255,0.5)}
+[data-id="content"].bulk_select_mode .list-box .list .image,
+[data-id="content"].bulk_select_mode .list-box .list .details,
+[data-id="content"].bulk_select_mode .list-box .list .controls {opacity: 0.5}
+[data-id="content"].bulk_select_mode .list-box .list.active  {background-color: white}
+[data-id="content"].bulk_select_mode .list-box .list.active .image,
+[data-id="content"].bulk_select_mode .list-box .list.active .details {opacity: 1}
+[data-id="content"].bulk_select_mode .list-box .no-interact {display: block}
+.list-box {
     margin: 0;
     padding: 7.5px;
     background-color: transparent;
 }
-ul.list-box li.list {
+.list-box .list {
     margin-bottom: 5px;
     border: 1px solid rgba(200,200,200,0.5);
     border-top-style: none;
@@ -12,8 +51,25 @@ ul.list-box li.list {
     background-color: white;
     list-style-type: none;
     display: block;
+    position: relative;
 }
-ul.list-box li.list .image {
+.list-box .list .check-box {
+    display: inline-block;
+    vertical-align: top;
+    position: relative;
+    padding: 0 !important;
+    margin-right: 5px;
+    z-index: 9;
+}
+.list-box .list .checkbox-ui {
+    top: 1px;
+    font-size: 12px;
+    border: 1px solid #aaa;
+}
+.list-box .list .checkbox-ui:hover {
+    background-color: white;
+}
+.list-box .list .image {
     width: 80px;
     height: 80px;
     border: 1px solid #d2d6de;
@@ -22,39 +78,36 @@ ul.list-box li.list .image {
     background-size: cover;
     display: inline-block;
     vertical-align: top;
+    margin-right: 5px;
 }
-ul.list-box li.list .image a {
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-ul.list-box li.list .detail {
-    margin-left: 5px;
+.list-box .list .image a {width: 100%;height: 100%;display: block;}
+.list-box .list .detail {
     display: inline-block;
     vertical-align: top;
     max-width: 300px;
 }
-ul.list-box li.list .title {
-    font-weight: bold;
-    font-size: 15px;
-}
-ul.list-box li.list .controls button {
-    margin-left: 5px;
-}
+.list-box .list .title {font-weight: bold;font-size: 15px;}
+.list-box .list .controls button {margin-left: 5px;}
 
 /* Item Thumb View - Display of media items. */
+[data-id="content"].bulk_select_mode .thumb-box.active {opacity: 1}
+[data-id="content"].bulk_select_mode .thumb-box.active .thumb .media-item {opacity: 1}
+[data-id="content"].bulk_select_mode .thumb-box.active .checkbox-ui {background-color: white;}
+[data-id="content"].bulk_select_mode .thumb-box .checkbox-ui {display: inline-block;}
+[data-id="content"].bulk_select_mode .thumb-box .thumb .media-item {opacity: 0.5}
+[data-id="content"].bulk_select_mode .thumb-box .thumb:hover > div.controls {display: none !important;}
+[data-id="content"].bulk_select_mode .thumb-box .no-interact {display: block}
 .thumb-box {
     position: relative;
     overflow: hidden;
-}
-.thumb-box {
     padding-left: 7.5px;
     padding-right: 7.5px;
 }
-.thumb {
+.thumb-box .thumb {
     position: relative;
+    box-sizing: border-box;
 }
-.thumb .image-link {
+.thumb-box .thumb .media-item {
     width: 100%;
     border: 1px solid #d2d6de;
     padding-bottom: 75%;
@@ -66,36 +119,37 @@ ul.list-box li.list .controls button {
     opacity: 0.9;
     cursor: pointer;
 }
-.thumb:hover .image-link {
+.thumb-box .thumb:hover .media-item {
     opacity: 1;
 }
-.thumb img {
+.thumb-box .thumb img {
     position: absolute;
     width: 100%;
     height: 100%;
     opacity: 0;
 }
-.thumb > div.controls {
+.thumb-box .thumb > div.controls {
     position: absolute;
     right: 8px;
     bottom: 8px;
     color: rgba(255,255,255,0.8);
     display: none;
 }
-.thumb:hover > div.controls {display: block;}
-.thumb > div.controls i {
-    text-shadow: rgba(46, 46, 46, 0.5) 0px 1px 2px;
+.thumb-box .thumb:hover > div.controls {display: block;}
+.thumb-box .thumb > div.controls i {
+    text-shadow: rgba(0,0,0,0.75) 0px 1px 1px;
 }
-.thumb > div.controls b {
+.thumb-box .thumb > div.controls b {
     display: inline-block;
     padding: 2px 5px;
     cursor: pointer;
 }
-.thumb > div.controls b:hover {
+.thumb-box .thumb > div.controls b:hover {
     color: rgba(255,255,255,1);
     background-color: rgba(0,0,0,0.6);
 }
-.thumb:hover {opacity: 1;}
+.thumb-box .checkbox-ui {background-color: rgba(255,255,255,0.8);box-shadow: 1px 1px 6px 0px rgba(0,0,0,0.75);position: absolute;left: 18px;top: 18px;display: none;}
+.thumb-box:hover .checkbox-ui {display: inline-block;}
 
 /* Media Library Responsiveness */
 @media (max-width: 550px) {
