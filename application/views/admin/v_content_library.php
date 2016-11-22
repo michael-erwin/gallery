@@ -13,6 +13,11 @@
             </select>
             <input id="file_input" type="file" name="files" multiple="true" style="display:none" />
             <a href="<?php echo base_url().'admin/media/upload';?>" class="btn btn-control silent-link btn-sm">Upload</a>
+            <select class="form-control input-sm" data-id="bulk_operation_box">
+                <option value="default" selected="true">Bulk Operation</option>
+                <option value="chage_category">Change Category</option>
+                <option value="delete">Delete</option>
+            </select>
         </div>
         <div class="control-right">
             <div class="toolbar-search">
@@ -28,11 +33,14 @@
 </div>
 <div class="content-block clearfix">
     <div class="float-left">
-        <div data-id="display_buttons">
-            <button title="Thumbnail view" class="btn btn-default btn-sm active" data-display="thumb">
+        <div data-id="quick_buttons">
+            <button class="btn btn-default btn-sm toggle-select" title="Select or deselect all">
+                <i class="fa fa-check"></i>
+            </button>
+            <button class="btn btn-default btn-sm display active" title="Thumbnail view" data-display="thumb">
                 <i class="fa fa-th-large"></i>
             </button>
-            <button title="List view" class="btn btn-default btn-sm" data-display="list">
+            <button class="btn btn-default btn-sm display" title="List view" data-display="list">
                 <i class="fa fa-th-list"></i>
             </button>
         </div>

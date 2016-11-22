@@ -181,20 +181,16 @@
     </script>
     <!-- /Global Constants -->
     <!-- Library Dependencies -->
-    <!-- jQuery 2.2.3 -->
     <script src="<?php echo base_url();?>assets/libs/jquery/jquery-2.2.4.min.js"></script>
-    <!-- Bootstrap 3.3.6 -->
     <script src="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.js"></script>
     <!-- Plugins Dependency -->
     <script src="<?php echo base_url();?>assets/plugins/toastr/toastr.min.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
     <!-- Theme App -->
-    <script src="<?php echo base_url();?>assets/js/app.min.js"></script>
-    <!-- Routine -->
-    <script src="<?php echo base_url();?>assets/js/modals.js"></script>
-    <script src="<?php echo base_url();?>assets/js/admin.js"></script>
-    <script src="<?php echo base_url();?>assets/js/video-modal.js"></script>
+    <script src="<?php echo base_url();?>assets/js/theme.min.js"></script>
+    <!-- Backend App -->
+    <script src="<?php echo base_url();?>assets/js/backend.js"></script>
     <script>
         // Initialize displays.
         admin_page.sidebar.selectMenu(<?php echo @$json['sidebar_menus'];?>);

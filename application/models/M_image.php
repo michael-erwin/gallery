@@ -38,7 +38,7 @@ class M_image extends CI_Model
             $category = $category? $this->db->escape($category) : 1;
 
             $sql = "INSERT INTO `images` SET `category_id`={$category}, `title`={$title}, `uid`='{$uid}', `width`={$width}, `height`={$height}, `file_size`={$size}, date_added={$date}";
-            
+
             if ($query = $this->db->query($sql))
             {
                 return $this->db->insert_id();
@@ -104,7 +104,7 @@ class M_image extends CI_Model
             if (strlen($tags) > 0) $sql .= " `tags`='{$tags}',";
             if (strlen($category) > 0) $sql .= " `category_id`={$category},";
             $sql .= " `date_modified`={$date} WHERE `id` IN ({$id})";
-            
+
             $this->db->query($sql);
             return $this->db->affected_rows();
         }
@@ -157,7 +157,6 @@ class M_image extends CI_Model
             }
             else
             {
-
                 // Delete physical files.
                 foreach($items as $item)
                 {
