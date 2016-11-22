@@ -81,9 +81,7 @@
             </div>
         </main>
     </div>
-    <footer>
-
-    </footer>
+    <footer></footer>
     <!-- Modals -->
     <div class="modal" id="modal_favorites">
         <div class="modal-dialog modal-lg">
@@ -172,36 +170,13 @@
     <script src="<?php echo base_url();?>assets/libs/bootstrap/bootstrap.min.js"></script>
     <!-- Plugins -->
     <script src="<?php echo base_url();?>assets/plugins/toastr/toastr.min.js"></script>
-    <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
-    <!-- <script src="<?php echo base_url();?>assets/js/video-modal.js"></script> -->
+    <!-- Frontend App -->
     <script src="<?php echo base_url();?>assets/js/frontend-app.js"></script>
     <script src="<?php echo base_url();?>assets/js/search-hint.js"></script>
     <script>
-        var site = {base_url:"<?php echo base_url();?>"}
-        $(document).ready(function(){
-            favorites.init();
-            results.init();
-
-            $(window).scroll(function (event) {
-            var scroll = $(window).scrollTop();
-                var isFixedTopbar = false;
-                if(scroll > 43) {
-                    isFixedTopbar = true;
-                }
-                if(isFixedTopbar){
-                    $("header").addClass("fixed-top");
-                    $("#search_bar").addClass("fixed-top");
-                    $("#thumbs_display").addClass("scrolling-top");
-                }
-                else{
-                    $("header").removeClass("fixed-top");
-                    $("#search_bar").removeClass("fixed-top");
-                    $("#thumbs_display").removeClass("scrolling-top");
-                }
-            });
-            $('form[action="search"] [name="kw"]').searchHint();
-        });
+        var site = {base_url:"<?php echo base_url();?>"};
+        $(document).ready(function(){favorites.init();results.init();$(window).scroll(function (event) {var scroll = $(window).scrollTop();var isFixedTopbar = false;if(scroll > 43) {isFixedTopbar = true;}if(isFixedTopbar){$("header").addClass("fixed-top");$("#search_bar").addClass("fixed-top");$("#thumbs_display").addClass("scrolling-top");}else{$("header").removeClass("fixed-top");$("#search_bar").removeClass("fixed-top");$("#thumbs_display").removeClass("scrolling-top");}});$('form[action="search"] [name="kw"]').searchHint();});
     </script>
     <?php echo @$result_js_init;?>
 </body>
