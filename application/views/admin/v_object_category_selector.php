@@ -10,7 +10,7 @@
                     <div class="modal-body">
                         <div class="form-group">
                             <label>Select a category: items(<span data-id="item_count"></span>)</label>
-                            <select class="form-control input-sm" data-id="category_box">
+                            <select class="form-control" data-id="category_box" size="8">
 
                             </select>
                         </div>

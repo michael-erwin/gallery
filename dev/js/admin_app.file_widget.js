@@ -20,7 +20,7 @@ admin_app.file_widget = function(file,caller_app)
         this.control_progress_level.width(amount+'%');
     }
     this.setAsComplete = function(uid) {
-        var type = (caller_app.data.media_type=="photos")? "images" : caller_app.data.media_type;
+        var type = (caller_app.data.media_type=="photos")? "photos" : caller_app.data.media_type;
         this.container.removeClass("uploading converting active").addClass("completed");
         this.item_pinkynail.css('background-image','url('+site.base_url+'media/'+type+'/public/128/'+uid+'.jpg');
         this.progress = 100;

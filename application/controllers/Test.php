@@ -4,20 +4,21 @@
 */
 class Test extends CI_Controller
 {
-    
+
     function __construct()
     {
         parent::__construct();
-        $this->load->model("m_tag");
     }
 
-    public function _remap($type="")
+    public function _remap()
     {
-        $tags = $this->input->get('tags');
-        if($tags) {
-            $tags = explode(' ', $tags);
-            header("Content-Type: text/plain");
-            print_r($this->m_tag->add($tags));
+        $url = "http://www.youtube.com?video=1234534";
+        $sch = parse_url($url, PHP_URL_SCHEME);
+        if(empty($sch)){
+            echo "Scheme is empty.";
+        }
+        else {
+            echo "Scheme is ".$sch;
         }
     }
 }

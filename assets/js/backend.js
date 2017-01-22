@@ -9,6 +9,9 @@ Array.prototype.remove = function() {
     }
     return this;
 };
+String.prototype.ucfirst = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
 var admin_page = {};
 var admin_app = {};
@@ -172,9 +175,9 @@ admin_app.library =
 {
     self: $('div.content-wrapper'),
     objects: {
-        media_type_box: null,
-        category_box: null,
-        bulk_operation_box: null,
+        media_type_dropdown_box: null,
+        category_dropdown_box: null,
+        bulk_operation_dropdown_box: null,
         search_form: null,
         search_box: null,
         display_quick_buttons: null,
@@ -193,15 +196,16 @@ admin_app.library =
         keyword: null,
         page: {current: 1,total: 0,limit: 24},
         items: {entries: [],total: 0},
-        type: 'images',
-        category: "",
+        type: 'photos',
+        category_id: "",
+        category_list: [],
         display: 'thumb',
         selected: []
     },
     init: function() {
-        this.objects.media_type_box = this.self.find('[data-id="media_type"]');
-        this.objects.category_box = this.self.find('[data-id="category"]');
-        this.objects.bulk_operation_box = this.self.find('[data-id="bulk_operation_box"]');
+        this.objects.media_type_dropdown_box = this.self.find('[data-id="media_type"]');
+        this.objects.category_dropdown_box = this.self.find('[data-id="category"]');
+        this.objects.bulk_operation_dropdown_box = this.self.find('[data-id="bulk_operation"]');
         this.objects.search_form = this.self.find('[data-id="search_form"]');
         this.objects.search_box = this.self.find('[data-id="search_box"]');
         this.objects.display_quick_buttons = this.self.find('[data-id="quick_buttons"] button.display');
@@ -211,9 +215,9 @@ admin_app.library =
         this.objects.pagination_next = this.self.find('.m-pagination .next');
         this.objects.pagination_total = this.self.find('.m-pagination .total');
         this.objects.content_box = this.self.find('[data-id="content"]');
-        this.objects.media_type_box.unbind().on('change',this.pickType.bind(this));
-        this.objects.category_box.unbind().on('change',this.pickCategory.bind(this));
-        this.objects.bulk_operation_box.unbind().on('change',this.bulkAction.bind(this));
+        this.objects.media_type_dropdown_box.unbind().on('change',this.renderMediaType.bind(this));
+        this.objects.category_dropdown_box.unbind().on('change',this.setMediaCategory.bind(this));
+        this.objects.bulk_operation_dropdown_box.unbind().on('change',this.runBulkAction.bind(this));
         this.objects.search_form.unbind().on('submit',this.doSearch.bind(this));
         this.objects.search_box.unbind().on('keydown',this.liveSearch.bind(this));
         this.objects.display_quick_buttons.unbind().on('click',this.switchDisplay.bind(this));
@@ -221,25 +225,25 @@ admin_app.library =
         this.objects.pagination_prev.unbind().on('click',this.prevPage.bind(this));
         this.objects.pagination_index.unbind().on('keypress',this.goPage.bind(this));
         this.objects.pagination_next.unbind().on('click',this.nextPage.bind(this));
-        this.getData();
+        this.renderMediaType();
     },
     render: function(){
         var entries = this.data.items.entries;
         var html = "";
 
         if(entries.length > 0){
-            if(this.data.type == "images") {
+            if(this.data.type == "photos") {
                 if(this.data.display == 'thumb') {
                     for(var i=0; i < entries.length; i++) {
-                        var image = entries[i];
-                        var thumb = site.base_url+'media/images/public/256/'+image.uid+'.jpg';
-                        var selected = $.inArray(image.id,this.data.selected);
+                        var photo = entries[i];
+                        var thumb = site.base_url+'media/photos/public/256/'+photo.uid+'.jpg';
+                        var selected = $.inArray(photo.id,this.data.selected);
                         var item_class = (selected > -1)? "active" : "";
                         var checked = (selected > -1)? "checked" : "";
                         html +=
-                        '<div class="media-entry thumb-box col-lg-2 '+item_class+' col-md-3 col-sm-4 col-xs-6" data-id="'+image.id+'" data-category_id="'+image.category_id+'" data-title="'+image.title+'">'+
+                        '<div class="media-entry thumb-box col-lg-2 '+item_class+' col-md-3 col-sm-4 col-xs-6" data-id="'+photo.id+'" data-category_id="'+photo.category_id+'" data-title="'+photo.title+'">'+
                             '<div class="thumb" >'+
-                                '<a href="'+site.base_url+'images/view/lg/'+image.uid+'" title="'+image.title+'" class="image-link media-item image-preview" style="background-image:url(\''+thumb+'\')">'+
+                                '<a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" title="'+photo.title+'" class="image-link media-item photo-preview" style="background-image:url(\''+thumb+'\')">'+
                                 '</a>'+
                                 '<div class="controls">'+
                                     '<b title="Move to category" data-id="move_category"><i class="fa fa-lg fa-exchange"></i></b>'+
@@ -248,29 +252,29 @@ admin_app.library =
                                 '</div>'+
                             '</div>'+
                             '<div class="no-interact"></div>'+
-                            '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+image.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
+                            '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+photo.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                         '</div>';
                     }
                 }
                 else if(this.data.display == 'list') {
                     html += '<ul class="list-box">'
                     for(var i=0; i < entries.length; i++) {
-                        var image = entries[i];
-                        var thumb = site.base_url+'media/images/public/128/'+image.uid+'.jpg';
-                        var selected = $.inArray(image.id,this.data.selected);
+                        var photo = entries[i];
+                        var thumb = site.base_url+'media/photos/public/128/'+photo.uid+'.jpg';
+                        var selected = $.inArray(photo.id,this.data.selected);
                         var item_class = (selected > -1)? "active" : "";
                         var checked = (selected > -1)? "checked" : "";
                         html +=
-                            '<li class="media-entry list clearfix '+item_class+'" data-id="'+image.id+'" data-category_id="'+image.category_id+'" data-title="'+image.title+'">'+
+                            '<li class="media-entry list clearfix '+item_class+'" data-id="'+photo.id+'" data-category_id="'+photo.category_id+'" data-title="'+photo.title+'">'+
                                 '<div class="check-box">'+
-                                    '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+image.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
+                                    '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+photo.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                                 '</div>'+
-                                '<div class="image" style="background-image:url('+thumb+')">'+
-                                    '<a href="'+site.base_url+'images/view/lg/'+image.uid+'" class="image-preview">&nbsp;</a>'+
+                                '<div class="photo" style="background-image:url('+thumb+')">'+
+                                    '<a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" class="photo-preview">&nbsp;</a>'+
                                 '</div>'+
                                 '<div class="detail">'+
-                                    '<div class="title"><a href="'+site.base_url+'images/view/lg/'+image.uid+'" class="image-preview">'+image.title+'</a></div>'+
-                                    '<div class="description">'+image.description+'</div>'+
+                                    '<div class="title"><a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" class="photo-preview">'+photo.title+'</a></div>'+
+                                    '<div class="description">'+photo.description+'</div>'+
                                 '</div>'+
                                 '<div class="controls float-right">'+
                                     '<button title="Move to category" class="btn btn-primary btn-xs" data-id="move_category"><i class="fa fa-exchange"></i></button>'+
@@ -322,7 +326,7 @@ admin_app.library =
                                     '<div class="check-box">'+
                                         '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+video.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                                     '</div>'+
-                                    '<div class="image" style="background-image:url('+thumb+')">'+
+                                    '<div class="photo" style="background-image:url('+thumb+')">'+
                                         '<a href="'+vlink+'" title="'+video.title+'" class="video-preview">&nbsp;</a>'+
                                     '</div>'+
                                     '<div class="detail">'+
@@ -368,23 +372,23 @@ admin_app.library =
         this.objects.display_quick_buttons.removeClass('active');
         this.self.find('button[data-display="'+this.data.display+'"]').addClass('active');
         if(this.data.selected.length > 0){
-            if(!this.objects.bulk_operation_box.hasClass('active')) this.objects.bulk_operation_box.val('default');
-            this.objects.bulk_operation_box.addClass('active');
+            if(!this.objects.bulk_operation_dropdown_box.hasClass('active')) this.objects.bulk_operation_dropdown_box.val('default');
+            this.objects.bulk_operation_dropdown_box.addClass('active');
             this.objects.content_box.addClass('bulk_select_mode');
         }
         else{
             this.objects.select_quick_buttons.removeClass('active');
-            this.objects.bulk_operation_box.removeClass('active');
+            this.objects.bulk_operation_dropdown_box.removeClass('active');
             this.objects.content_box.removeClass('bulk_select_mode');
         }
         this.objects.content_box.find('.controls [data-id="move_category"]').unbind().on('click',this.moveToCategory.bind(this));
         this.objects.content_box.find('.checkbox-ui [type="checkbox"]').unbind().on('click',this.selectMedia.bind(this));
         this.objects.content_box.find('.controls [data-id="edit"]').unbind().on('click',this.editMedia.bind(this));
         this.objects.content_box.find('.controls [data-id="delete"]').unbind().on('click',this.deleteMedia.bind(this));
-        this.objects.content_box.find('a.image-preview').fullsizable({detach_id: 'main_header',clickBehaviour: 'next'});
+        this.objects.content_box.find('a.photo-preview').fullsizable({detach_id: 'main_header',clickBehaviour: 'next'});
         this.objects.content_box.find('a.video-preview').unbind('click').click(videomodal.open);
     },
-    bulkAction: function(e){
+    runBulkAction: function(e){
         var $this = this;
         var action = e.target.value;
         if(action == "chage_category"){
@@ -417,7 +421,7 @@ admin_app.library =
                     }
                 });
             }
-            var cancelDelete = function(){this.objects.bulk_operation_box.val('default')}
+            var cancelDelete = function(){this.objects.bulk_operation_dropdown_box.val('default')}
             modal.confirm("Do you want to delete "+item_count+" "+this.data.type+"?",deleteItems,cancelDelete.bind(this));
         }
     },
@@ -437,7 +441,7 @@ admin_app.library =
         if(e) e.preventDefault();
         var data = {
             kw: this.objects.search_box.val(),
-            c: this.objects.category_box.val(),
+            c: this.objects.category_dropdown_box.val(),
             p: this.data.page.current,
             l: this.data.page.limit,
             m: 'json'
@@ -445,7 +449,7 @@ admin_app.library =
             if(this.objects.active_search) this.objects.active_search.abort();
             this.objects.active_search = $.ajax({
                 type: "get",
-                url: site.base_url+"/search/"+this.data.type,
+                url: site.base_url+"search/"+this.data.type,
                 context: this,
                 data: data,
                 dataType: "json",
@@ -458,15 +462,63 @@ admin_app.library =
                 }
             });
     },
-    pickType: function(e){
-        var type = e.target.value;
-        this.data.type = type;
-        this.getData();
+    renderCategoryDropdown() {
+        var category_structure = {};
+        var category_list = this.data.category_list;
+        var category_html = '<option value="" selected>All</option>';
+        for(var i=0;i<category_list.length;i++) {
+            if(category_list[i].level == 1){
+                category_structure['parent_'+category_list[i].id] = {self:category_list[i],children:[]};
+            }
+            if(category_list[i].level == 2){
+                var my_parent_id = 'parent_'+category_list[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(category_list[i]);
+                }
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[category_list[i]]};
+                }
+            }
+        }
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                category_html += '<option value="'+main_cat['self'].id+'">'+main_cat['self'].title+'</option>';
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.category_dropdown_box.html(category_html);
     },
-    pickCategory: function(e){
-        var category_id = e.target.value;
+    renderMediaType: function(e) {
+        this.objects.pagination_index.val(1);
+        this.data.type = this.objects.media_type_dropdown_box.val();
         this.data.page.current = 1;
-        this.data.category = category_id;
+        $.ajax({
+            "method": "get",
+            "context": this,
+            "url": site.base_url+'admin/media/categories/json',
+            "data": "list="+this.data.type,
+            "error" : function(jqXHR,textStatus,errorThrown){
+                toastr["error"]("Failed to load category list.", "Error "+jqXHR.status);
+            },
+            "success": function(response){
+                this.data.category_list = response;
+                this.renderCategoryDropdown();
+                this.getData();
+            }
+        });
+    },
+    setMediaCategory: function(e){
+        this.objects.pagination_index.val(1);
+        this.data.page.current = 1;
         this.getData();
     },
     switchDisplay: function(e){
@@ -517,7 +569,7 @@ admin_app.library =
     },
     moveToCategory: function(e){
         var parent = $(e.target).parents(".media-entry");
-        var endpoint = site.base_url+this.objects.media_type_box.val()+'/update';
+        var endpoint = site.base_url+this.objects.media_type_dropdown_box.val()+'/update';
         var data = {
             id: parent.attr('data-id'),
             category_id: parent.attr('data-category_id')
@@ -542,12 +594,12 @@ admin_app.library =
             }
         }
         if(this.data.selected.length > 0){
-            if(!this.objects.bulk_operation_box.hasClass('active')) this.objects.bulk_operation_box.val('default');
-            this.objects.bulk_operation_box.addClass('active');
+            if(!this.objects.bulk_operation_dropdown_box.hasClass('active')) this.objects.bulk_operation_dropdown_box.val('default');
+            this.objects.bulk_operation_dropdown_box.addClass('active');
             this.objects.content_box.addClass('bulk_select_mode');
         }
         else{
-            this.objects.bulk_operation_box.removeClass('active');
+            this.objects.bulk_operation_dropdown_box.removeClass('active');
             this.objects.content_box.removeClass('bulk_select_mode');
         }
     },
@@ -571,8 +623,8 @@ admin_app.library =
     editMedia: function(e){
         var parent = $(e.target).parents(".media-entry");
         var id = parent.attr('data-id');
-        if(this.data.type == "images") {
-            admin_app.image_editor.open(id,this.getData.bind(this));
+        if(this.data.type == "photos") {
+            admin_app.photo_editor.open(id,this.getData.bind(this));
         }
         else if(this.data.type == "videos") {
             admin_app.video_editor.open(id,this.getData.bind(this));
@@ -607,9 +659,9 @@ admin_app.library =
     }
 }
 
-admin_app.image_editor =
+admin_app.photo_editor =
 {
-    self: "#modal_image_editor",
+    self: "#modal_photo_editor",
     objects: {
         img_box: null,
         meta_date_added: null,
@@ -647,7 +699,7 @@ admin_app.image_editor =
     init: function() {
         this.self = $(this.self);
         this.objects.img_box = this.self.find('.modal-media-box');
-        this.objects.img_box.find('img[data-id="image"]').unbind().on('load',this.imgLoaded.bind(this));
+        this.objects.img_box.find('img[data-id="photo"]').unbind().on('load',this.imgLoaded.bind(this));
         this.objects.meta_date_added = this.self.find('[data-id="date_added"]');
         this.objects.meta_date_modified = this.self.find('[data-id="date_modified"]');
         this.objects.meta_file_size = this.self.find('[data-id="file_size"]');
@@ -668,7 +720,7 @@ admin_app.image_editor =
     },
     render: function() {
         this.objects.img_box.addClass("loading");
-        this.objects.img_box.find('img[data-id="image"]').attr('src',site.base_url+'images/view/lg/'+this.data.uid);
+        this.objects.img_box.find('img[data-id="photo"]').attr('src',site.base_url+'photos/view/lg/'+this.data.uid);
         this.enableState();
         this.objects.meta_date_added.text(this.data.date_added);
         this.objects.meta_date_modified.text(this.data.date_modified);
@@ -717,7 +769,7 @@ admin_app.image_editor =
         }
         $.ajax({
             context: this,
-            url: site.base_url+"images/update",
+            url: site.base_url+"photos/update",
             method: "post",
             data: data,
             error: function(jqXHR,textStatus,errorThrown){
@@ -778,7 +830,7 @@ admin_app.image_editor =
         }
         $.ajax({
             context: $this,
-            url: site.base_url+'images/info/'+id,
+            url: site.base_url+'photos/info/'+id,
             error: function(jqXHR,textStatus,errorThrown){
                 toastr["error"]("Failed to load content.", "Error "+jqXHR.status);
             },
@@ -1114,62 +1166,157 @@ admin_app.video_editor =
 admin_app.category =
 {
     self: $('div.content-wrapper'),
+    config: {
+        expanded_items: {}
+    },
     objects: {
         'new_button': null,
         'table_body': null,
+        'media_type_dropdown': null,
+        'expand_icon': null
     },
-    data: {},
+    data: {
+        media_list: [],
+        media_type: 'photos'
+    },
     init: function() {
+        this.objects.media_type_dropdown = this.self.find('[data-id="media_type"]');
         this.objects.new_button = this.self.find('[data-id="new_button"]');
-        this.objects.table_body = this.self.find('tbody[data-id="list"]');
+        this.objects.table_body = this.self.find('#categories_table tbody');
+        this.objects.expand_icon = this.self.find('#categories_table tbody i.active');
+        this.objects.media_type_dropdown.unbind().on('change',this.setMediaType.bind(this));
         this.objects.new_button.unbind().on('click',admin_app.category_editor.new.bind(admin_app.category_editor));
         this.getData();
     },
     render: function() {
-        var html = "";
-        for(var i=0;i<this.data.length;i++) {
-            var delete_button = "";
-            if(this.data[i]['core'] == "no") {
-                delete_button = '\n<button class="btn btn-danger btn-xs" data-id="delete_entry"><i class="fa fa-trash"></i></button>';
+        var mains = {};
+        for(var i=0;i<this.data.media_list.length;i++) {
+            if(Number(this.data.media_list[i]['parent_id']) === 0) {
+                var main_id = 'm_'+this.data.media_list[i]['id'];
+                if(typeof mains[main_id] === "undefined") mains[main_id] = {};
+                mains[main_id].id = this.data.media_list[i]['id'];
+                mains[main_id].level = this.data.media_list[i]['level'];
+                mains[main_id].title = this.data.media_list[i]['title'];
+                mains[main_id].icon = this.data.media_list[i]['icon'];
+                mains[main_id].description = this.data.media_list[i]['description'];
+                mains[main_id].parent_id = this.data.media_list[i]['parent_id'];
+                mains[main_id].published = this.data.media_list[i]['published'];
+                mains[main_id].core = this.data.media_list[i]['core'];
+                mains[main_id].date_added = this.data.media_list[i]['date_added'];
+                mains[main_id].date_modified = this.data.media_list[i]['date_modified'];
             }
-            html +=
-            '<tr data-all=\''+JSON.stringify(this.data[i])+'\'>'+
-                '<td>'+this.data[i]['title']+'</td>'+
-                '<td>'+this.data[i]['description']+'</td>'+
-                '<td>'+this.data[i]['published']+'</td>'+
-                '<td>'+
-                    '<button class="btn btn-primary btn-xs" data-id="edit_entry"><i class="fa fa-pencil"></i></button>'+
-                    delete_button+
-                '</td>'+
-            '</tr>'
+            else{
+                var main_id = 'm_'+this.data.media_list[i]['parent_id'];
+                var subc_id = 's_'+this.data.media_list[i]['id'];
+                if(typeof mains[main_id] === "undefined") mains[main_id] = {};
+                if(typeof mains[main_id].subcats === "undefined") mains[main_id].subcats = {};
+                mains[main_id].subcats[subc_id] = this.data.media_list[i];
+            }
         }
-        this.objects.table_body.html(html);
+        var table_html = "";
+        for(var item in mains){
+            var option_button = "";
+            var expand_button = "";
+            var expand_status = "";
+            if(typeof this.config.expanded_items[item] !== "undefined"){
+                if(this.config.expanded_items[item] === 1){
+                    expand_status = 'expanded';
+                }
+            }
+            if(mains[item]['core'] == "no") {
+                option_button = '<button class="btn btn-primary btn-xs" data-id="edit_entry"><i class="fa fa-pencil"></i></button>'+
+                                '\n<button class="btn btn-danger btn-xs" data-id="delete_entry"><i class="fa fa-trash"></i></button>';
+            }
+            if(mains[item]['id'] > 1) {
+                if(typeof mains[item]['subcats'] === "object"){
+                    expand_button = '<i class="fa active '+expand_status+'"></i>';
+                }
+                else{
+                    expand_button = '<i class="fa disabled '+expand_status+'"></i>';
+                }
+            }
+            table_html +=
+            '<tr class="main-category" data-all=\''+JSON.stringify(mains[item])+'\'>'+
+                '<td class="handle">'+expand_button+'</td>'+
+                '<td>'+mains[item]['title']+'</td>'+
+                '<td>'+mains[item]['description']+'</td>'+
+                '<td>'+mains[item]['published']+'</td>'+
+                '<td>'+
+                    option_button+
+                '</td>'+
+            '</tr>';
+            if(typeof mains[item]['subcats'] === "object") {
+                for(var subcat in mains[item]['subcats']){
+                    if(mains[item]['subcats'][subcat]['core'] == "no") {
+                        option_button = '<button class="btn btn-primary btn-xs" data-id="edit_entry"><i class="fa fa-pencil"></i></button>'+
+                                        '\n<button class="btn btn-danger btn-xs" data-id="delete_entry"><i class="fa fa-trash"></i></button>';
+                    }
+                    var my_parent_id = mains[item]['subcats'][subcat]['parent_id'];
+                    var my_display = 'none';
+                    if(typeof this.config.expanded_items[item] !== "undefined"){
+                        if(this.config.expanded_items[item] === 1){
+                            my_display = 'table-row';
+                        }
+                    }
+                    table_html +=
+                    '<tr class="sub-category parent-id-'+my_parent_id+'" style="display:'+my_display+'" data-all=\''+JSON.stringify(mains[item]['subcats'][subcat])+'\'>'+
+                        '<td class="handle"></td>'+
+                        '<td>'+mains[item]['subcats'][subcat]['title']+'</td>'+
+                        '<td>'+mains[item]['subcats'][subcat]['description']+'</td>'+
+                        '<td>'+mains[item]['subcats'][subcat]['published']+'</td>'+
+                        '<td>'+
+                            option_button+
+                        '</td>'+
+                    '</tr>';
+                }
+            }
+        }
+        this.objects.table_body.html(table_html);
         this.self.find('button[data-id="edit_entry"]').unbind().on('click',this.edit.bind(this));
         this.self.find('button[data-id="delete_entry"]').unbind().on('click',this.delete.bind(this));
+        this.self.find('#categories_table tbody i.active').unbind().on('click',this.toggleSubcat.bind(this));
     },
     getData: function(data) {
         if(data) {
-            this.data = data;
+            this.data.media_list = data;
             this.render();
         }
         else{
             $.ajax({
-                url: site.base_url+'categories/get_all',
+                url: site.base_url+'admin/media/categories/json',
                 method: 'get',
+                data: 'list='+this.objects.media_type_dropdown.val(),
                 context: this,
                 error: function(jqXHR,textStatus,errorThrown){
                     toastr["error"]("Failed to load content.", "Error "+jqXHR.status);
                 },
                 success: function(response) {
-                    if(response.status == "ok") {
-                        this.data = response.data;
-                        this.render();
-                    }
-                    else {
-                        toastr["error"]("Internal server error.", "Error 500");
-                    }
+                    this.data.media_list = response;
+                    this.render();
                 }
             });
+        }
+    },
+    setMediaType: function(e) {
+        this.data.media_type = this.objects.media_type_dropdown.val();
+        admin_app.category_editor.data.item.type = this.data.media_type;
+        this.getData();
+    },
+    toggleSubcat(e){
+        var self = $(e.target);
+        var item = self.parents('tr.main-category');
+        var data = JSON.parse(item.attr('data-all'));
+        var subs = this.self.find('tr.parent-id-'+data.id);
+        var name = 'm_'+data.id;
+        if(self.hasClass('expanded')){
+            subs.css('display','none');
+            self.removeClass('expanded');
+            this.config.expanded_items[name] = 0;
+        }
+        else{
+            subs.css('display','table-row');
+            self.addClass('expanded');
+            this.config.expanded_items[name] = 1;
         }
     },
     edit: function(e) {
@@ -1183,9 +1330,9 @@ admin_app.category =
         var id = data.id;
         var doDelete = function() {
             $.ajax({
-                url: site.base_url+'categories/delete',
+                url: site.base_url+'categories/manage/delete',
                 method: "post",
-                data: 'id='+id,
+                data: 'id='+id+'&type='+this.objects.media_type_dropdown.val(),
                 context: this,
                 error: function(jqXHR,textStatus,errorThrown){
                     toastr["error"]("Failed to reach content.", "Error "+jqXHR.status);
@@ -1211,11 +1358,17 @@ admin_app.category_editor =
     objects: {
         'modal_title': null,
         'editor_form': null,
+        'publish_options': null,
+        'category_levels': null,
+        'category_parent_dropdown': null,
+        'parent_level_block': null,
         'item': {
             'id': null,
             'title': null,
             'icon': null,
             'description': null,
+            'category_level_main': null,
+            'category_level_sub': null,
             'publish_yes': null,
             'publish_no': null
         },
@@ -1223,18 +1376,25 @@ admin_app.category_editor =
         cancel_button: null
     },
     data: {
-        editor_title: 'Category (New)',
+        editor_title: 'New Category',
         editor_visible: false,
         item: {
             id: "",
+            level: null,
+            type: null,
             title: "",
             description: "",
-            publish: "yes"
+            icon: "",
+            publish: "no"
         },
+        type: "",
         disabled: {
             'id': false,
             'title': false,
             'description': false,
+            'category_parent_input': false,
+            'category_level_main': false,
+            'category_level_sub': false,
             'publish_yes': false,
             'publish_no': false
         },
@@ -1244,10 +1404,16 @@ admin_app.category_editor =
         this.self = $(this.self);
         this.objects.modal_title = this.self.find('h4.modal-title');
         this.objects.editor_form = this.self.find('form[data-id="editor_form"]');
+        this.objects.publish_options = this.self.find('[name="publish"]');
+        this.objects.parent_level_block = this.self.find('[data-id="parent_category"]');
+        this.objects.category_levels = this.self.find('[name="level"]');
+        this.objects.category_parent_dropdown = this.self.find('[data-id="parent_category"] select');
         this.objects.item.id = this.self.find('[name="id"]');
         this.objects.item.title = this.self.find('[name="title"]');
         this.objects.item.description = this.self.find('[name="description"]');
         this.objects.item.icon = this.self.find('[name="icon"]');
+        this.objects.item.category_level_main = this.self.find('[name="level"][value="1"]');
+        this.objects.item.category_level_sub = this.self.find('[name="level"][value="2"]');
         this.objects.item.publish_yes = this.self.find('input[value="yes"]');
         this.objects.item.publish_no = this.self.find('input[value="no"]');
         this.objects.item.save_button = this.self.find('button[type="submit"]');
@@ -1255,7 +1421,6 @@ admin_app.category_editor =
         this.self.unbind('hidden.bs.modal').on('hidden.bs.modal', (function(){
             this.data.editor_visible = false;
         }).bind(this));
-        this.objects.editor_form.unbind().on('submit',this.save.bind(this));
         this.self.modal({backdrop: 'static'}).modal('hide');
         this.data.disabled = {
             'id': false,
@@ -1264,14 +1429,29 @@ admin_app.category_editor =
             'publish_yes': false,
             'publish_no': false
         }
+        this.objects.category_levels.unbind().on('click',this.setLevel.bind(this));
+        this.objects.editor_form.unbind().on('submit',this.save.bind(this));
     },
     render: function() {
+        var parent_dropdown_html = '';
+        for(var i=0;i<admin_app.category.data.media_list.length;i++){
+            var current_item = admin_app.category.data.media_list[i];
+            if((current_item.id > 1) && (current_item.level == 1)) parent_dropdown_html += '<option value="'+current_item.id+'">'+current_item.title+'</option>';
+        }
+        this.objects.parent_level_block.find('select.list').html(parent_dropdown_html);
         this.self.find('.error').removeClass('error');
         this.objects.modal_title.text(this.data.editor_title);
         this.objects.item.id.val(this.data.item.id);
         this.objects.item.title.val(this.data.item.title);
         this.objects.item.description.val(this.data.item.description);
         this.objects.item.icon.val(this.data.item.icon);
+        if(this.self.find('[name="level"]:checked').val() == 1){
+            this.objects.parent_level_block.css('display','none');
+        }
+        else{
+            this.objects.category_parent_dropdown.val(this.data.item.parent_id);
+            this.objects.parent_level_block.css('display','block');
+        }
         if(this.data.item.publish == "yes") {
             this.objects.item.publish_no.prop('checked',false);
             this.objects.item.publish_yes.prop('checked',true);
@@ -1300,17 +1480,30 @@ admin_app.category_editor =
         this.data.item = {
             id: "",
             title: "",
+            type: admin_app.category.data.media_type,
+            level: 1,
             description: "",
             icon: "",
-            publish: "yes"
+            parent_id: 0,
+            publish: "no"
         }
         this.data.disabled['id'] = false;
         this.data.disabled['title'] = false;
         this.data.disabled['description'] = false;
         this.data.disabled['publish_yes'] = false;
         this.data.disabled['publish_no'] = false;
-        this.data.editor_title = "Category (New)";
+        this.data.disabled['category_level_main'] = false;
+        this.data.disabled['category_level_sub'] = false;
+        this.data.editor_title = "New Category ("+admin_app.category.data.media_type.ucfirst()+")";
         this.data.editor_visible = true;
+        this.objects.category_levels.each(function(){
+            if($(this).val() == 1) {
+                $(this).prop('checked',true);
+            }
+            else {
+                $(this).prop('checked',false);
+            }
+        });
         this.render();
     },
     edit: function(data) {
@@ -1318,9 +1511,28 @@ admin_app.category_editor =
         this.data.item = {
             id: data.id,
             title: data.title,
+            type: admin_app.category.data.media_type,
+            level: data.level,
             description: data.description,
             icon: data.icon,
+            parent_id: data.parent_id,
             publish: data.published
+        }
+        this.objects.category_levels.each(function(){
+            if($(this).val() == data.level) {
+                $(this).prop('checked',true);
+            }
+            else {
+                $(this).prop('checked',false);
+            }
+        });
+        if(data.level == 1){
+            this.data.disabled['category_level_main'] = false;
+            this.data.disabled['category_level_sub'] = true;
+        }
+        else{
+            this.data.disabled['category_level_main'] = true;
+            this.data.disabled['category_level_sub'] = false;
         }
         if(data.core == "yes") {
             this.data.disabled['title'] = true;
@@ -1330,34 +1542,53 @@ admin_app.category_editor =
             this.data.disabled['title'] = false;
             this.data.disabled['description'] = false;
         }
-        this.data.disabled['publish_yes'] = false;
+        this.data.disabled['publish_yes'] = false;+")"
         this.data.disabled['publish_no'] = false;
-        this.data.editor_title = "Category (Edit)";
+
+        this.data.editor_title = "Edit Category ("+admin_app.category.data.media_type.ucfirst()+")";
         this.data.editor_visible = true;
+        this.render();
+    },
+    setLevel: function() {
+        this.data.item.title = this.objects.item.title.val();
+        this.data.item.description = this.objects.item.description.val();
+        this.data.item.icon = this.objects.item.icon.val();
         this.render();
     },
     save: function(e) {
         e.preventDefault();
+        var errors = 0;
         this.data.item.id = this.objects.item.id.val();
         this.data.item.title = this.objects.item.title.val();
         this.data.item.description = this.objects.item.description.val();
         this.data.item.icon = this.objects.item.icon.val();
         this.data.item.publish = this.self.find('[name="publish"]:checked').val();
+        this.data.item.level = this.self.find('[name="level"]:checked').val();
         if($.trim(this.data.item.title).length == 0) {
             this.objects.item.title.addClass('error');
+            errors++;
         }
-        else {
+        if(this.data.item.level == 1){
+            this.data.item.parent_id = 0;
+        }
+        else{
+            var category_parent = this.objects.category_parent_dropdown;
+            if(category_parent.val() === null){
+                this.data.item.parent_id = 0;
+                category_parent.addClass('error');
+                errors++;
+            }
+            else{
+                category_parent.removeClass('error');
+                this.data.item.parent_id = category_parent.val();
+            }
+        }
+        if(errors === 0) {
             this.objects.item.title.removeClass('error');
             this.disableState();
-            var data = {
-                id: this.data.item.id,
-                title: this.data.item.title,
-                description: this.data.item.description,
-                icon: this.data.item.icon,
-                publish: this.data.item.publish
-            }
+            var data = this.data.item;
             $.ajax({
-                url: site.base_url+'categories/'+this.data.task,
+                url: site.base_url+'categories/manage/'+this.data.task,
                 method: "post",
                 data: data,
                 context: this,
@@ -1415,7 +1646,7 @@ admin_app.category_selector =
             id: null,
             category_id: null
         },
-        categories: null,
+        items:[],
         selector_visible: false,
         endpoint: null,
         passed_fn: null
@@ -1430,24 +1661,54 @@ admin_app.category_selector =
         this.self.modal({backdrop: 'static'}).modal('hide');
         this.self.unbind('hidden.bs.modal').on('hide.bs.modal', (function(){
             this.data.selector_visible = false;
-            $('select[data-id="bulk_operation_box"]').val('default');
+            $('select[data-id="bulk_operation"]').val('default');
         }).bind(this));
         this.objects.selection_form.unbind().on('submit', this.save.bind(this));
     },
     render: function(){
-        if(this.data.categories){
-            var categories = this.data.categories;
-            var cat_markup = "";
-            for(var i=0;i<categories.length;i++) {
-                if(this.data.item.category_id == categories[i].id) {
-                    cat_markup += '<option value="'+categories[i].id+'" selected="true">'+categories[i].title+'</option>';
+        var category_structure = {};
+        var category_html = "";
+        var categories = admin_app.library.data.category_list;
+        for(var i=0;i<categories.length;i++) {
+            if(categories[i].level == 1){
+                category_structure['parent_'+categories[i].id] = {self:categories[i],children:[]};
+            }
+            if(categories[i].level == 2){
+                var my_parent_id = 'parent_'+categories[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(categories[i]);
                 }
-                else {
-                    cat_markup += '<option value="'+categories[i].id+'">'+categories[i].title+'</option>';
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[categories[i]]};
                 }
             }
-            this.objects.selection_box.html(cat_markup);
         }
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                if(this.data.item.category_id == main_cat['self'].id){ 
+                    category_html += '<option value="'+main_cat['self'].id+'" selected>'+main_cat['self'].title+'</option>';
+                }
+                else{
+                    category_html += '<option value="'+main_cat['self'].id+'">'+main_cat['self'].title+'</option>';
+                }
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        if(this.data.item.category_id == main_cat['children'][x].id){ 
+                            category_html += '<option value="'+main_cat['children'][x].id+'" selected>'+main_cat['children'][x].title+'</option>';
+                        }
+                        else{
+                            category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                        }
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.selection_box.html(category_html);
         if(this.data.selector_visible){
             this.self.modal('show');
         }
@@ -1463,7 +1724,7 @@ admin_app.category_selector =
         }
     },
     open: function(endpoint,data,fn){
-        this.data.endpoint = endpoint;
+        this.data.endpoint = endpoint; 
         this.data.item.id = data.id;
         this.data.item.category_id = data.category_id;
         this.enableState();
@@ -1550,7 +1811,7 @@ admin_app.file_widget = function(file,caller_app)
         this.control_progress_level.width(amount+'%');
     }
     this.setAsComplete = function(uid) {
-        var type = (caller_app.data.media_type=="photos")? "images" : caller_app.data.media_type;
+        var type = (caller_app.data.media_type=="photos")? "photos" : caller_app.data.media_type;
         this.container.removeClass("uploading converting active").addClass("completed");
         this.item_pinkynail.css('background-image','url('+site.base_url+'media/'+type+'/public/128/'+uid+'.jpg');
         this.progress = 100;
@@ -1590,9 +1851,10 @@ admin_app.uploader =
     },
     data: {
         media_type: "photos",
-        media_category: 1,
+        media_category_id: 1,
         allowed_photos: ['image/jpeg','image/pjpeg','image/png','image/bmp','image/x-windows-bmp','image/gif'],
         allowed_videos: ['video/mp4','video/mpeg','video/mpeg','video/quicktime','video/x-matroska','video/x-flv','video/x-msvideo','video/x-ms-wmv'],
+        category_list: []
     },
     init: function() {
 
@@ -1605,8 +1867,8 @@ admin_app.uploader =
         this.objects.file_input = $("#file_input");
         this.objects.media_type_box = $('#content_toolbar_form [name="type"]');
 
-        this.objects.media_type_box.unbind('change').on('change',this.setMedia.bind(this));
-        this.objects.category_box.unbind('change').on('change',this.setMedia.bind(this));
+        this.objects.media_type_box.unbind('change').on('change',this.setMediaType.bind(this));
+        this.objects.category_box.unbind('change').on('change',function(){this.data.media_category_id = this.objects.category_box.val();}.bind(this));
 
         this.objects.drop_zone.on('dragenter', function (e) {
             e.stopPropagation();
@@ -1649,6 +1911,7 @@ admin_app.uploader =
             e.preventDefault();
         });
         this.render();
+        this.renderCategoryDropdown();
     },
     render: function() {
         var remove_indexes = [];
@@ -1667,9 +1930,21 @@ admin_app.uploader =
         }
         this.objects.media_type_box.val(this.data.media_type);
     },
-    setMedia: function() {
+    setMediaType: function() {
         this.data.media_type = this.objects.media_type_box.val();
-        this.data.media_category = this.objects.category_box.val();
+        $.ajax({
+            "method": "get",
+            "context": this,
+            "url": site.base_url+'admin/media/categories/json',
+            "data": "list="+this.data.media_type,
+            "error" : function(jqXHR,textStatus,errorThrown){
+                toastr["error"]("Failed to load category list.", "Error "+jqXHR.status);
+            },
+            "success": function(response){
+                this.data.category_list = response;
+                this.renderCategoryDropdown();
+            }
+        });
     },
     getNextUpload() {
         var files = this.objects.files;
@@ -1696,7 +1971,7 @@ admin_app.uploader =
 
         var form_data = new FormData();
         form_data.append('file', file_widget.file);
-        form_data.append('category_id', this.data.media_category);
+        form_data.append('category_id', this.data.media_category_id);
 
         xhr.error = function(e) {
             toastr["warning"]("Failed to upload "+item_name+"?");
@@ -1715,12 +1990,12 @@ admin_app.uploader =
                 if(response.status == "ok") {
                     if(media_type == "photos") {
 
-                        file_widget.onEdit(function(){admin_app.image_editor.open(id)});
+                        file_widget.onEdit(function(){admin_app.photo_editor.open(id)});
                         file_widget.onDelete(function(){
                             var delete_item = function() {
                                 $.ajax({
                                     "method": "post",
-                                    "url": site.base_url+'images/delete',
+                                    "url": site.base_url+'photos/delete',
                                     "data": "id="+id,
                                     "error" : function(jqXHR,textStatus,errorThrown){
                                         toastr["error"]("Failed to delete \""+item_name+"\".", "Error "+jqXHR.status);
@@ -1818,6 +2093,41 @@ admin_app.uploader =
         if(next_upload) { 
             admin_app.uploader.upload(next_upload);
         }
+    },
+    renderCategoryDropdown() {
+        var category_structure = {};
+        var category_list = this.data.category_list;
+        var category_html = "";
+        for(var i=0;i<category_list.length;i++) {
+            if(category_list[i].level == 1){
+                category_structure['parent_'+category_list[i].id] = {self:category_list[i],children:[]};
+            }
+            if(category_list[i].level == 2){
+                var my_parent_id = 'parent_'+category_list[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(category_list[i]);
+                }
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[category_list[i]]};
+                }
+            }
+        }
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                category_html += '<option value="'+main_cat['self'].id+'" selected>'+main_cat['self'].title+'</option>';
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.category_box.html(category_html);
     },
     handleInput(files_list) {
         var type = this.data.media_type;

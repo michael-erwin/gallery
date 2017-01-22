@@ -56,7 +56,7 @@ var favorites = {
         var parent_thumb = $(e.target).parents('.thumb');
         var parent_data = JSON.parse(parent_thumb.attr('data-data'));
         var media_type = parent_thumb.attr('data-media');
-        if(media_type == "image") {
+        if(media_type == "photo") {
             var existed = $.inArray(parent_data.id,this.data.photos);
             if(existed === -1) {
                 this.data.photos.push(parent_data.id);
@@ -132,7 +132,7 @@ var favorites = {
                 $.ajax({
                     type: "get",
                     context: this,
-                    url: site.base_url+"images/info?id="+this.data.photos.join(','),
+                    url: site.base_url+"photos/info?id="+this.data.photos.join(','),
                     context: this,
                     success: function(response) {
                         var data = response.data;
@@ -141,7 +141,7 @@ var favorites = {
                             var seo_link = data.title.split(' ');
                             thumbs +=
                             '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data.id+'">'+
-                                '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data.uid+'.jpg)"></a>'+
+                                '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'photos/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/photos/public/128/'+data.uid+'.jpg)"></a>'+
                                 '<div class="controls">'+
                                     '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                 '</div>'+
@@ -152,7 +152,7 @@ var favorites = {
                                 var seo_link = data[x].title.split(' ');
                                 thumbs +=
                                 '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data[x].id+'">'+
-                                    '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data[x].uid+'.jpg)"></a>'+
+                                    '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'photos/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/photos/public/128/'+data[x].uid+'.jpg)"></a>'+
                                     '<div class="controls">'+
                                         '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                     '</div>'+

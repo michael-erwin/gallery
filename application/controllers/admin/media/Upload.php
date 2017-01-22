@@ -6,7 +6,7 @@
 *
 * @package  Media Gallery
 * @author   Michael Erwin Virgines <michael.erwinp@gmail.com>
-* 
+*
 */
 class Upload extends CI_Controller
 {
@@ -35,8 +35,7 @@ class Upload extends CI_Controller
         $data['sidebar_menu'] = $this->load->view('admin/v_sidebar_menu','',true);
 
         // Content.
-        $content['categories'] = $this->m_category->get_all();
-        $data['content'] = $this->load->view('admin/v_content_upload',$content,true);
+        $data['content'] = $this->load->view('admin/v_content_upload','',true);
 
         // JSON Data used by js to initialize contents.
         $data['json']['sidebar_menus'] = json_encode($this->sidebar_menus);
@@ -44,11 +43,14 @@ class Upload extends CI_Controller
         $data['json']['breadcrumbs'] = json_encode($this->breadcrumbs);
 
         // Page objects.
-        $data['objects']  = $this->load->view('admin/v_object_image_editor','',true);
+        $data['objects']  = $this->load->view('admin/v_object_photo_editor','',true);
         $data['objects'] .= $this->load->view('admin/v_object_video_editor','',true);
 
         // JS Scripts.
-        $data['js_scripts'] = $this->load->view('admin/scripts/v_scripts_media_upload','',true);
+        $js_scripts = [
+            'category_list' => json_encode($this->m_category->get_all('photo'))
+        ];
+        $data['js_scripts'] = $this->load->view('admin/scripts/v_scripts_media_upload',$js_scripts,true);
 
         // Page Template.
         $this->load->view('v_admin_layout',$data);
@@ -57,11 +59,10 @@ class Upload extends CI_Controller
     public function json($option=null)
     {
         // Content.
-        $content['categories'] = $this->m_category->get_all();
-        $body = clean_whitespace($this->load->view('admin/v_content_upload',$content,true));
+        $body = clean_whitespace($this->load->view('admin/v_content_upload','',true));
 
         // Page objects.
-        $objects  = $this->load->view('admin/v_object_image_editor','',true);
+        $objects  = $this->load->view('admin/v_object_photo_editor','',true);
         $objects .= $this->load->view('admin/v_object_video_editor','',true);
 
         if ($option)
@@ -89,6 +90,9 @@ class Upload extends CI_Controller
     public function js()
     {
         header("Content-Type: application/javascript");
-        $this->load->view('admin/scripts/v_scripts_media_upload');
+        $js_scripts = [
+            'category_list' => json_encode($this->m_category->get_all('photo'))
+        ];
+        $this->load->view('admin/scripts/v_scripts_media_upload',$js_scripts);
     }
 }

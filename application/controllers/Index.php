@@ -4,7 +4,7 @@
 */
 class Index extends CI_Controller
 {
-    
+
     function __construct()
     {
         parent::__construct();
@@ -13,38 +13,35 @@ class Index extends CI_Controller
     public function index()
     {
         $data = [
-            'backdrop_image' => "",
+            'backdrop_photo' => "",
             'category_thumbs' => ""
         ];
 
         // Get backdrop for CTA block.
         $folder = 'assets/img/backdrops/';
         $files = scandir('assets/img/backdrops/');
-        $images = [];
+        $photos = [];
         foreach($files as $file)
         {
             if(is_file($folder.$file))
             {
-                $images[] = $file;
+                $photos[] = $file;
             }
         }
-        $i = rand(0,count($images)-1);
-        $data['backdrop_image'] = base_url($folder.$images[$i]);
+        $i = rand(0,count($photos)-1);
+        $data['backdrop_photo'] = base_url($folder.$photos[$i]);
 
         // Get category for thumb listing.
-        $query = $this->db->query("SELECT * FROM `categories` WHERE `published`='yes' LIMIT 16");
-        $result = $query->result_array();
-
-        foreach($result as $category)
+        $data['category_thumbs'] = "";
+        $media_types = [
+            ["icon"=>"assets/img/category_icons/core/photos.jpg","link"=>base_url('categories/photos'),"title"=>"Photos"],
+            ["icon"=>"assets/img/category_icons/core/videos.jpg","link"=>base_url('categories/videos'),"title"=>"Videos"]
+        ];
+        foreach($media_types as $item)
         {
-            $seo_title = explode(' ', $category['title']);
-            $seo_title = end($seo_title).'-'.$category['id'];
-            $data_thumb['title'] = $category['title'];
-            $data_thumb['icon'] = $category['icon'];
-            $data_thumb['images_link'] = base_url("categories/{$seo_title}/images/");
-            $data_thumb['videos_link'] = base_url("categories/{$seo_title}/videos/");
-            $data['category_thumbs'] .= $this->load->view('common/v_category_thumb_frontend',$data_thumb,true);
+            $data['category_thumbs'] .= $this->load->view('common/v_category_thumb_frontend',$item,true);
         }
+        $data['category_thumbs'] = compress_html($data['category_thumbs']);
 
         $this->load->view('v_index_layout',$data);
     }

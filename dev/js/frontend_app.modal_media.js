@@ -14,21 +14,21 @@ var modal_media = {
         var contents = this.buildTable(data,type);
         this.objects.self.modal('show');
         this.objects.content_body.addClass('loading');
-        this.objects.media_box.removeClass('media-image media-video');
+        this.objects.media_box.removeClass('media-photo media-video');
         setTimeout(function(){
             this.objects.content_body.removeClass('loading');
             this.objects.info_box.html(contents);
-            if(type == "images") {
-                var image_link = site.base_url+'images/preview/lg/'+(data.title).replace(' ','-')+'-'+data.uid;
-                this.objects.media_box.removeClass('media-video').addClass('media-image');
-                image_page_box.init.call(image_page_box);
-                image_page_box.objects.main_image.attr('src',image_link);
+            if(type == "photos") {
+                var photo_link = site.base_url+'photos/preview/lg/'+(data.title).replace(' ','-')+'-'+data.uid;
+                this.objects.media_box.removeClass('media-video').addClass('media-photo');
+                photo_page_box.init.call(photo_page_box);
+                photo_page_box.objects.main_photo.attr('src',photo_link);
             }
             else if(type == "videos") {
                 //var video_link = site.base_url+'videos/preview/'+(data.title).replace(' ','-')+'-'+data.uid;
                 var video_link = site.base_url+'media/videos/public/480p/'+data.uid+'.mp4';
                 var video_poster = site.base_url+'media/videos/public/480/'+data.uid+'.jpg';
-                this.objects.media_box.removeClass('media-image').addClass('media-video');
+                this.objects.media_box.removeClass('media-photo').addClass('media-video');
                 video_page_box.poster(video_poster);
                 video_page_box.src(video_link);
                 video_page_box.play();

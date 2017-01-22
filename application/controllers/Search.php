@@ -1,10 +1,10 @@
 <?php
 /**
-* 
+*
 */
 class Search extends CI_Controller
 {
-    
+
     function __construct()
     {
         parent::__construct();
@@ -24,7 +24,7 @@ class Search extends CI_Controller
             }
             elseif($method == "category")
             {
-                $type = ($param_1 == "videos")? $param_1 : "images";
+                $type = ($param_1 == "videos")? $param_1 : "photos";
                 $category_id = (!empty(clean_numeric_text($param_2)))? explode('-', $param_2) : 1;
                 $category_id = is_array($category_id)? end($category_id) : $category_id;
                 $this->fetch($type,trim($category_id));
@@ -39,7 +39,7 @@ class Search extends CI_Controller
         }
         else
         {
-            $this->fetch("images");
+            $this->fetch("photos");
         }
     }
 
@@ -62,11 +62,11 @@ class Search extends CI_Controller
 
     private function fetch($type=null,$value=null)
     {
-        $type = ($type != "")? $type : "images;";
+        $type = ($type != "")? $type : "photos";
         $crumbs = [
             'Home' => base_url(),
-            'Search' => base_url("search"),
-            ucfirst($type) => ""
+            ucfirst($type) => base_url("categories/{$type}"),
+            'Search' => ""
         ];
         $keys = clean_title_text($this->input->get('kw'));
         $page = clean_numeric_text($this->input->get('p'));
@@ -111,7 +111,7 @@ class Search extends CI_Controller
 
         $data = $this->db->query($sql);
         $rows = $this->db->query("SELECT FOUND_ROWS() AS `total`");
-        
+
         $items = $data->result_array();
         $total = $rows->result_array()[0]['total'];
 
@@ -170,10 +170,10 @@ class Search extends CI_Controller
         }
 
         // Search widget and thumbnails display logic.
-        if($result['items']['type'] == "images")
+        if($result['items']['type'] == "photos")
         {
-            $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>'images'],true);
-            
+            $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>'photos'],true);
+
             if($result['items']['total'] > 0)
             {
                 foreach ($result['items']['entries'] as $item)
@@ -182,14 +182,14 @@ class Search extends CI_Controller
                     $thumb_data['title'] = $item['title'];
                     $thumb_data['uid'] = $item['uid'];
                     $thumb_data['seo_title'] = preg_replace('/\s/', '-', $item['title']).'-'.$item['uid'];
-                    $data['thumbs'] .= $this->load->view('common/v_result_thumbs_images',$thumb_data,true);
+                    $data['thumbs'] .= $this->load->view('common/v_result_thumbs_photos',$thumb_data,true);
                 }
             }
             else
             {
                 $data['thumbs'] = '<div class="alert alert-warning">No results.</div>';
             }
-            
+
         }
         else if($result['items']['type'] == "videos")
         {
@@ -210,7 +210,7 @@ class Search extends CI_Controller
             {
                 $data['thumbs'] = '<div class="alert alert-warning">No results.</div>';
             }
-            
+
         }
 
         // Pagination display logic.

@@ -54,7 +54,7 @@ var favorites = {
         var parent_thumb = $(e.target).parents('.thumb');
         var parent_data = JSON.parse(parent_thumb.attr('data-data'));
         var media_type = parent_thumb.attr('data-media');
-        if(media_type == "image") {
+        if(media_type == "photo") {
             var existed = $.inArray(parent_data.id,this.data.photos);
             if(existed === -1) {
                 this.data.photos.push(parent_data.id);
@@ -130,7 +130,7 @@ var favorites = {
                 $.ajax({
                     type: "get",
                     context: this,
-                    url: site.base_url+"images/info?id="+this.data.photos.join(','),
+                    url: site.base_url+"photos/info?id="+this.data.photos.join(','),
                     context: this,
                     success: function(response) {
                         var data = response.data;
@@ -139,7 +139,7 @@ var favorites = {
                             var seo_link = data.title.split(' ');
                             thumbs +=
                             '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data.id+'">'+
-                                '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data.uid+'.jpg)"></a>'+
+                                '<a class="favorites-img-preview" title="'+data.title+'" href="'+site.base_url+'photos/item/'+seo_link.join('-')+'-'+data.uid+'" target="_blank" style="background-image:url('+site.base_url+'media/photos/public/128/'+data.uid+'.jpg)"></a>'+
                                 '<div class="controls">'+
                                     '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                 '</div>'+
@@ -150,7 +150,7 @@ var favorites = {
                                 var seo_link = data[x].title.split(' ');
                                 thumbs +=
                                 '<div class="item col-xs-6 col-sm-4 col-md-3" data-type="photo" data-id="'+data[x].id+'">'+
-                                    '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'images/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/images/public/128/'+data[x].uid+'.jpg)"></a>'+
+                                    '<a class="favorites-img-preview" title="'+data[x].title+'" href="'+site.base_url+'photos/item/'+seo_link.join('-')+'-'+data[x].uid+'" target="_blank" style="background-image:url('+site.base_url+'media/photos/public/128/'+data[x].uid+'.jpg)"></a>'+
                                     '<div class="controls">'+
                                         '<a class="remove-button overlay-ctrl-btn" title="Remove"><span class="glyphicon glyphicon-remove"></span></a>'+
                                     '</div>'+
@@ -215,7 +215,7 @@ var results = {
     document: $('body'),
     self: $('#results_app'),
     data: {
-        type: 'images',
+        type: 'photos',
         keywords: '',
         category_name: '',
         category_id: '',
@@ -296,7 +296,10 @@ var results = {
             };
         }
         else if(this.data.route == "categories") {
-            var get_url = "/categories/"+this.data.category_name+'-'+this.data.category_id+'/'+this.data.type+'/'+this.data.page.current;
+            var get_url = site.base_url+"categories/"+this.data.type+'/'+
+                          this.data.main_category_name+'-'+this.data.main_category_id+'/'+
+                          this.data.category_name+'-'+this.data.category_id+'/'+
+                          this.data.page.current;
             var data = {
                 l: this.data.page.limit,
                 m: 'json'
@@ -322,20 +325,20 @@ var results = {
         var html = "";
         document.title = this.data.page_meta.title;
         if(entries.length > 0){
-            if(this.data.type == "images") {
-                for(var image in entries) {
-                    var image = entries[image];
-                    var data = JSON.stringify(image);
-                    var thumb = site.base_url+'media/images/public/256/'+image.uid+'.jpg';
-                    var seo_link = image.title.split(' ');
-                    seo_link = site.base_url+'images/item/'+seo_link.join('-')+'-'+image.uid;
+            if(this.data.type == "photos") {
+                for(var photo in entries) {
+                    var photo = entries[photo];
+                    var data = JSON.stringify(photo);
+                    var thumb = site.base_url+'media/photos/public/256/'+photo.uid+'.jpg';
+                    var seo_link = photo.title.split(' ');
+                    seo_link = site.base_url+'photos/item/'+seo_link.join('-')+'-'+photo.uid;
                     html += '<div class="thumb-box col-md-3 col-sm-4 col-xs-6">'+
-                                '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="image">'+
-                                    '<a title="'+image.title+'" class="image-link image-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
+                                '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="photo">'+
+                                    '<a title="'+photo.title+'" class="image-link photo-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
                                         '<img src="'+thumb+'" />'+
                                     '</a>'+
                                     '<div class="title">'+
-                                        '<span>'+image.title+'</span>'+
+                                        '<span>'+photo.title+'</span>'+
                                     '</div>'+
                                     '<div class="options">'+
                                         '<b title="Download" data-id="download"><i class="fa fa-lg fa-download"></i></b>'+
@@ -463,9 +466,9 @@ var results = {
     download: function(e) {
         var thumb = $(e.target).parents(".thumb");
         var type = thumb.attr("data-media");
-        if(type == "image") {
+        if(type == "photo") {
             var data = JSON.parse(thumb.attr("data-data"));
-            window.open('//'+location.host+'/images/download/'+data.uid,'_blank');
+            window.open('//'+location.host+'/photos/download/'+data.uid,'_blank');
         }
         if(type == "video") {
             var data = JSON.parse(thumb.attr("data-data"));
@@ -515,20 +518,20 @@ var modal_media = {
         var contents = this.buildTable(data,type);
         this.objects.self.modal('show');
         this.objects.content_body.addClass('loading');
-        this.objects.media_box.removeClass('media-image media-video');
+        this.objects.media_box.removeClass('media-photo media-video');
         setTimeout(function(){
             this.objects.content_body.removeClass('loading');
             this.objects.info_box.html(contents);
-            if(type == "images") {
-                var image_link = site.base_url+'images/preview/lg/'+(data.title).replace(' ','-')+'-'+data.uid;
-                this.objects.media_box.removeClass('media-video').addClass('media-image');
-                image_page_box.init.call(image_page_box);
-                image_page_box.objects.main_image.attr('src',image_link);
+            if(type == "photos") {
+                var photo_link = site.base_url+'photos/preview/lg/'+(data.title).replace(' ','-')+'-'+data.uid;
+                this.objects.media_box.removeClass('media-video').addClass('media-photo');
+                photo_page_box.init.call(photo_page_box);
+                photo_page_box.objects.main_photo.attr('src',photo_link);
             }
             else if(type == "videos") {
                 var video_link = site.base_url+'media/videos/public/480p/'+data.uid+'.mp4';
                 var video_poster = site.base_url+'media/videos/public/480/'+data.uid+'.jpg';
-                this.objects.media_box.removeClass('media-image').addClass('media-video');
+                this.objects.media_box.removeClass('media-photo').addClass('media-video');
                 video_page_box.poster(video_poster);
                 video_page_box.src(video_link);
                 video_page_box.play();
@@ -568,34 +571,34 @@ var modal_media = {
     }
 };
 
-var image_page_box = {
+var photo_page_box = {
     objects: {
-        main_box: $('.media-item-display .media-image'),
-        main_image: $('.media-item-display .media-image img'),
-        fs_button: $('.media-item-display .media-image .display-options span.fullscreen'),
-        fs_x_button: $('#image_fullscreen .exit-btn'),
-        fs_content: $('#image_fullscreen .display-content')
+        main_box: $('.media-item-display .media-photo'),
+        main_photo: $('.media-item-display .media-photo img'),
+        fs_button: $('.media-item-display .media-photo .display-options span.fullscreen'),
+        fs_x_button: $('#photo_fullscreen .exit-btn'),
+        fs_content: $('#photo_fullscreen .display-content')
     },
     data: {
         fullscreen: false
     },
     init: function() {
-        this.objects.main_box = $('.media-item-display .media-image');
-        this.objects.main_image = $('.media-item-display .media-image img');
-        this.objects.fs_button = $('.media-item-display .media-image .display-options span.fullscreen');
-        this.objects.fs_x_button = $('#image_fullscreen .exit-btn');
-        this.objects.fs_content = $('#image_fullscreen .display-content');
+        this.objects.main_box = $('.media-item-display .media-photo');
+        this.objects.main_photo = $('.media-item-display .media-photo img');
+        this.objects.fs_button = $('.media-item-display .media-photo .display-options span.fullscreen');
+        this.objects.fs_x_button = $('#photo_fullscreen .exit-btn');
+        this.objects.fs_content = $('#photo_fullscreen .display-content');
 
-        this.objects.main_image.unbind('load').on('load',this.stateLoaded.bind(this));
+        this.objects.main_photo.unbind('load').on('load',this.stateLoaded.bind(this));
         this.objects.fs_button.unbind('click').on('click', this.goFullScreen.bind(this));
         this.objects.fs_x_button.unbind('click').on('click', this.exitFullScreen.bind(this));
     },
     render: function() {
         if(this.data.fullscreen) {
-            var image_url = this.objects.main_image.attr('src');
-            var content = '<img src="'+image_url+'">';
+            var photo_url = this.objects.main_photo.attr('src');
+            var content = '<img src="'+photo_url+'">';
             this.objects.fs_content.html(content);
-            media_box.goFullScreen('image_fullscreen');
+            media_box.goFullScreen('photo_fullscreen');
         }
         else {
             this.objects.fs_content.html("");

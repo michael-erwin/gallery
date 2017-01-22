@@ -17,7 +17,7 @@
         <header>
             <section id="top_bar" class="container-fluid max-width main-padding">
                 <div id="logo">
-                    <a href="<?php echo base_url();?>"><i class="fa fa-camera fa-lg" style="color:#D61"></i> Media Gallery</a>
+                    <a href="<?php echo base_url();?>"><i class="fa fa-camera fa-lg" style="color:#c93428"></i> Media Gallery</a>
                 </div>
                 <div id="actions">
                     <ul>
@@ -25,7 +25,7 @@
                             <a>FAVORITES</a>
                             <div class="box-wrapper">
                                 <ul class="submenu" id="menu_favorites">
-                                    <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
+                                    <li><a data-id="photos">Photos <span class="badge" data-id="fav_badge_photos">0</span></a></li>
                                     <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
                                 </ul>
                             </div>
@@ -38,18 +38,18 @@
         </header>
         <main>
             <div id="cta_block">
-                <div class="background" style="background-image:url(<?php echo @$backdrop_image;?>)"></div>
+                <div class="background" style="background-image:url(<?php echo @$backdrop_photo;?>)"></div>
                 <div class="foreground">
                     <div class="search_action">
                         <form id="search_action_form">
                             <div class="search_action_container">
-                                <input type="hidden" name="type" value="images">
-                                <input type="text" name="kw" placeholder="Search for images" autocomplete="off">
+                                <input type="hidden" name="type" value="photos">
+                                <input type="text" name="kw" placeholder="Search for photos" autocomplete="off">
                                 <span class="separator"></span>
                                 <div id="media_type_box" class="media-type" tabindex="1">
-                                    <div id="search_type"><span class="text">Images</span> <span class="caret"></span></div>
+                                    <div id="search_type"><span class="text">Photos</span> <span class="caret"></span></div>
                                     <ul>
-                                        <li><a data-value="images">Images</a></li>
+                                        <li><a data-value="photos">Photos</a></li>
                                         <li><a data-value="videos">Videos</a></li>
                                     </ul>
                                 </div>
@@ -62,7 +62,7 @@
             </div>
             <div id="categories_block" class="max-width">
                 <h2>Browse Categries</h2>
-                <section class="container-fluid">
+                <section class="container-fluid centered">
                     <!--
                     <div class="thumb-box col-xs-6 col-sm-4 col-md-3"><div class="category-thumb"></div></div>
                     -->

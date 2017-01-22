@@ -19,7 +19,7 @@
         <header>
             <section id="top_bar" class="container-fluid max-width main-padding">
                 <div id="logo">
-                    <a href="<?php echo base_url();?>"><i class="fa fa-camera fa-lg" style="color:#D61"></i> Media Gallery</a>
+                    <a href="<?php echo base_url();?>"><i class="fa fa-camera fa-lg" style="color:#c93428"></i> Media Gallery</a>
                 </div>
                 <div id="actions">
                     <ul>
@@ -27,7 +27,7 @@
                             <a>FAVORITES</a>
                             <div class="box-wrapper">
                                 <ul class="submenu" id="menu_favorites">
-                                    <li><a data-id="photos">Images <span class="badge" data-id="fav_badge_photos">0</span></a></li>
+                                    <li><a data-id="photos">Photos <span class="badge" data-id="fav_badge_photos">0</span></a></li>
                                     <li><a data-id="videos">Videos <span class="badge" data-id="fav_badge_videos">0</span></a></li>
                                 </ul>
                             </div>
@@ -55,13 +55,15 @@
                         <?php echo @$breadcrumbs;?>
                     </div>
                 </section>
-                <section id="category_thumbs_display" class="container-fluid max-width">
+                <section id="category_thumbs_display" class="container-fluid centered max-width">
                     <?php echo @$category_thumbs;?>
+                    
                 </section>
-                <section id="thumbs_display" class="container-fluid max-width">
+                <section id="thumbs_display" class="container-fluid centered max-width">
                     <div class="clearfix" data-id="thumbs">
                         <!-- Result -->
                             <?php echo @$thumbs; ?>
+
                         <!-- /Result -->
                     </div>
                     <div class="ajax-loader" data-id="loading">
@@ -126,7 +128,7 @@
                                 <video id="video_item_object" preload="none" class="video-js vjs-default-skin vjs-big-play-centered" controls data-setup='{"fluid":true}'>
                                   <source src=" " type="video/mp4" />
                                 </video>
-                                <img id="image_item_object">
+                                <img id="photo_item_object">
                                 <div class="display-options">
                                     <span class="display-options-icon overlay-ctrl-btn fullscreen" title="Fullscreen"></span>
                                 </div>
@@ -160,7 +162,7 @@
             </div>
         </div>
     </div>
-    <div id="image_fullscreen" class="fs-window">
+    <div id="photo_fullscreen" class="fs-window">
         <div class="display-content"></div>
         <div class="exit-btn" title="Exit"></div>
     </div>

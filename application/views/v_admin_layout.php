@@ -50,14 +50,14 @@
                         <li class="dropdown user user-menu">
                             <!-- Menu Toggle Button -->
                             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                            <!-- The user image in the navbar-->
-                            <img alt="User Image" class="user-image" src="<?php echo base_url();?>assets/img/user.jpg">
+                            <!-- The user photo in the navbar-->
+                            <img alt="User Photo" class="user-image" src="<?php echo base_url();?>assets/img/user.jpg">
                             <!-- hidden-xs hides the username on small devices so only the image appears. -->
                             <span class="hidden-xs">Johnnie Walker</span></a>
                             <ul class="dropdown-menu">
                                 <!-- The user image in the menu -->
                                 <li class="user-header">
-                                    <img alt="User Image" class="img-circle" src="<?php echo base_url();?>assets/img/user.jpg">
+                                    <img alt="User Photo" class="img-circle" src="<?php echo base_url();?>assets/img/user.jpg">
                                     <p>Johnnie Walker - Administrator <small>Member since Jan. 2015</small></p>
                                 </li>
                                 <!-- Menu Body -->
@@ -188,7 +188,8 @@
     <script src="<?php echo base_url();?>assets/plugins/fullsizable/js/jquery.fullsizable.js"></script>
     <script src="<?php echo base_url();?>assets/plugins/videojs/video.min.js"></script>
     <!-- Theme App -->
-    <script src="<?php echo base_url();?>assets/js/theme.min.js"></script>
+    <!-- <script src="<?php echo base_url();?>assets/js/theme.min.js"></script> -->
+    <script src="<?php echo base_url();?>dev/js/theme.js"></script>
     <!-- Backend App -->
     <script src="<?php echo base_url();?>assets/js/backend.js"></script>
     <script>

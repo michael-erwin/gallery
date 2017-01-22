@@ -14,6 +14,7 @@ class Categories extends CI_Controller
             ["text"=>"Categories","link"=>""]
         ];
         $this->sidebar_menus = ["media","categories"];
+        $this->load->model('m_category');
     }
 
     public function index($option=null)
@@ -44,28 +45,38 @@ class Categories extends CI_Controller
 
     public function json($option=null)
     {
-        $body = clean_whitespace($this->load->view('admin/v_content_categories','',true));
-
-        // Page objects.
-        $objects = $this->load->view('admin/v_object_category_editor','',true);
-
-        if ($option)
-        {
-            if ($option == "page_title") $response = $this->page_title;
-            if ($option == "page_description") $response = $this->page_description;
-            if ($option == "breadcrumbs") $response = $this->breadcrumbs;
-            if ($option == "content") $response = $body;
+        $list_type = $this->input->get('list');
+        if($list_type == "photos")
+        { // Get list of all categories under photos media type.
+            $response = $this->m_category->get_all('photo');
         }
-        else
-        {
-            $response = [
-                "sidebar_menus" => $this->sidebar_menus,
-                "page_title" => $this->page_title,
-                "page_description" => $this->page_description,
-                "breadcrumbs" => $this->breadcrumbs,
-                "content" => $body,
-                "objects" => $objects
-            ];
+        elseif($list_type == "videos")
+        { // Get list of all categories under photos media type.
+            $response = $this->m_category->get_all('video');
+        }
+        else {
+            $body = clean_whitespace($this->load->view('admin/v_content_categories','',true));
+            // Page objects.
+            $objects = $this->load->view('admin/v_object_category_editor','',true);
+
+            if ($option)
+            {
+                if ($option == "page_title") $response = $this->page_title;
+                if ($option == "page_description") $response = $this->page_description;
+                if ($option == "breadcrumbs") $response = $this->breadcrumbs;
+                if ($option == "content") $response = $body;
+            }
+            else
+            {
+                $response = [
+                    "sidebar_menus" => $this->sidebar_menus,
+                    "page_title" => $this->page_title,
+                    "page_description" => $this->page_description,
+                    "breadcrumbs" => $this->breadcrumbs,
+                    "content" => $body,
+                    "objects" => $objects
+                ];
+            }
         }
         header("Content-Type: application/json");
         echo json_encode($response);

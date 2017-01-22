@@ -1,15 +1,9 @@
-<div class="thumb-box col-xs-6 col-sm-4 col-md-3">
-    <div class="category-thumb" style="background-image:url('<?php echo @$icon;?>')">
+<div class="thumb-box col-xs-6 col-sm-4 col-md-3 centered">
+    <div class="category-thumb">
         <div class="link-overlay">
-            <div class="link-object">
-                <div>
-                    <div class="links">
-                        <a href="<?php echo @$images_link;?>"><span>Images</span></a>
-                        <a href="<?php echo @$videos_link;?>"><span>Videos</span></a>
-                    </div>
-                </div>
-            </div>
+            <a class="cat-cta" title="<?php echo @$title;?>" class="ellipsis" href="<?php echo @$link;?>"><?php echo @$title;?></a>
+            <div class="background-image" style="background-image:url('<?php echo @$icon;?>')"></div>
+            <div class="background-color"></div>
         </div>
     </div>
-    <div class="title"><?php echo @$title;?></div>
 </div>

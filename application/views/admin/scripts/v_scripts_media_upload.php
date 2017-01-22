@@ -6,8 +6,9 @@
 
         $(document).ready(function(){
             // Initialize uploader.
+            admin_app.uploader.data.category_list = <?php echo @$category_list;?>;
             admin_app.uploader.init();
-            // Initialize image editor.
-            admin_app.image_editor.init();
+            // Initialize photo editor.
+            admin_app.photo_editor.init();
             admin_app.video_editor.init();
         });

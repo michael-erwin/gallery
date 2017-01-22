@@ -1,19 +1,13 @@
 <div class="content-toolbar content-box clearfix">
-    <!-- <form id="content_toolbar_form"> -->
         <div class="control-left">
             <select class="form-control input-sm" data-id="media_type">
-                <option value="images">Photos</option>
+                <option value="photos" selected>Photos</option>
                 <option value="videos">Videos</option>
             </select>
             <select class="form-control input-sm" data-id="category">
-                <option value="" selected="true">All</option>
-<?php foreach($categories as $category): ?>
-                <option value="<?php echo $category['id'];?>"><?php echo ucwords($category['title']);?></option>
-<?php endforeach;?>
+                <option value="0" selected>All</option>
             </select>
-            <input id="file_input" type="file" name="files" multiple="true" style="display:none" />
-            <a href="<?php echo base_url().'admin/media/upload';?>" class="btn btn-control silent-link btn-sm">Upload</a>
-            <select class="form-control input-sm" data-id="bulk_operation_box">
+            <select class="form-control input-sm" data-id="bulk_operation">
                 <option value="default" selected="true">Bulk Operation</option>
                 <option value="chage_category">Change Category</option>
                 <option value="delete">Delete</option>
@@ -29,7 +23,6 @@
                 </form>
             </div>
         </div>
-    <!-- </form> -->
 </div>
 <div class="content-block clearfix">
     <div class="float-left">

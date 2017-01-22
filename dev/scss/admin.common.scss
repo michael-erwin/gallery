@@ -16,6 +16,87 @@
     outline: 0;
 }
 
+/* Custom UI */
+.custom-dropdown {
+    width: auto;
+    height: 30px;
+    float:left;
+    display: inline-block;
+    position: relative;
+    margin-right: 5px;
+    border: 1px solid #d2d6de;
+    outline: none;
+    cursor: pointer;
+}
+.custom-dropdown span.selected {
+    width: 100%;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    padding-left: 10px;
+    padding-right: 15px;
+    display: block;
+    position: absolute;
+    top: 0; left: 0;
+    cursor: pointer;
+}
+.custom-dropdown span.selected + i.caret {
+    position: relative;
+    top: 13px; right: 8px;
+    float: right;
+    border-top: 5px solid;
+}
+.custom-dropdown a.selected {
+    min-width: 115px;
+    height: 30px;
+    line-height: 30px;
+    font-size: 12px;
+    padding-left: 10px;
+    padding-right: 20px;
+    display: inline-block;
+}
+.custom-dropdown a.selected + i.caret {
+    color: #3c8dbc;
+    position: absolute;;
+    top: 13px; right: 8px;
+    float: right;
+    border-top: 5px solid;
+}
+.custom-dropdown i.arrow:before {
+    width: 0;
+    height: 0;
+    border-top: 5px solid #555;
+}
+.custom-dropdown ul {
+    padding-left: 0;
+    padding-right: 0;
+    padding-bottom: 0;
+    list-style-type: none;
+    position: relative;
+    top: calc(100% + 1px);
+    margin-left: -1px;
+    margin-right: -1px;
+    background-color: white;
+    border: 1px solid #d2d6de;
+    opacity: 0;
+    z-index: -1;
+}
+.custom-dropdown:focus ul {
+    opacity: 1;
+    z-index: 1;
+}
+.custom-dropdown ul li {
+    padding-left: 10px;
+    padding-top: 2px;
+    padding-right: 15px;
+    padding-bottom: 2px;
+    cursor: default;
+}
+.custom-dropdown ul li:hover {
+    background: #1068b5;
+    color: white;
+}
+
 /* Bootstrap Related */
 .btn-default.active:hover {background-color: #e7e7e7;}
 ol.breadcrumb a.active {
@@ -50,8 +131,8 @@ ol.breadcrumb a.active {
     display: inline-block;
     width: auto;
 }
-.content-toolbar select[data-id="bulk_operation_box"] {display: none;}
-.content-toolbar select[data-id="bulk_operation_box"].active {display: inline-block;}
+.content-toolbar select[data-id="bulk_operation"] {display: none;}
+.content-toolbar select[data-id="bulk_operation"].active {display: inline-block;}
 .content-toolbar .control-left {float: left;}
 .content-toolbar .form-control {padding: 0px 8px;}
 .content-toolbar .control-right,

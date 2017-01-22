@@ -14,6 +14,9 @@ html,body {
 .btn-default {
     border-color: #cccccc;
 }
+.container-fluid.centered {
+    text-align: center;
+}
 .modal-content {
     border-radius: 0px;
 }
@@ -34,6 +37,15 @@ html,body {
     height: auto;
     padding-bottom: 40px;
     margin-bottom: -40px;
+}
+.thumb-box.centered {
+    display: inline-block;
+    float: none;
+}
+.ellipsis {
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  overflow: hidden;
 }
 .float-left {float: left;}
 .float-right {float: right;}
@@ -95,12 +107,12 @@ ol.breadcrumb a.active {
     border: 1px solid #dddddd;
     position: relative;
 }
-.media-item-display .media.media-image {
+.media-item-display .media.media-photo {
     background-repeat: no-repeat;
     background-position: center center;
     background-image: url('../img/hourglass.gif');
 }
-.media-item-display .media.media-image img {
+.media-item-display .media.media-photo img {
     display: none;
     max-width: 100%;
     max-height: 550px;
@@ -111,23 +123,23 @@ ol.breadcrumb a.active {
 .media-item-display .media .video-js,
 .media-item-display .media img,
 .media-item-display .media .display-options,
-.media-item-display .media.media-image .video-js,
+.media-item-display .media.media-photo .video-js,
 .media-item-display .media.media-video img,
 .media-item-display .media.media-video .display-options {
     display: none;
 }
-.media-item-display .media.media-image.loaded img,
-.media-item-display .media.media-image.loaded:hover .display-options {
+.media-item-display .media.media-photo.loaded img,
+.media-item-display .media.media-photo.loaded:hover .display-options {
     display: inline-block;
 }
-.media-item-display .media.media-image .display-options {
+.media-item-display .media.media-photo .display-options {
     position: absolute;
     right: 15px;
     top: 15px;
     display: none;
 }
 
-.media-item-display .media.media-image .display-options > span {
+.media-item-display .media.media-photo .display-options > span {
     font-size: 20px;
     font-family: 'Glyphicons Halflings';
     padding: 2px 4px;
@@ -135,7 +147,7 @@ ol.breadcrumb a.active {
     cursor: pointer;
     margin-left: 5px;
 }
-.media-item-display .media.media-image .display-options .fullscreen:before {
+.media-item-display .media.media-photo .display-options .fullscreen:before {
     display: inline;
     content: "\e140";
 }
@@ -400,74 +412,73 @@ main .category-thumb {
     border: 1px solid #eee;
     position: relative;
 }
-main .category-thumb:hover .link-overlay {
-    display: block;
-}
 main .category-thumb .link-overlay {
+    width: 100%;
+    height: 100%;
     position: absolute;
     left: 0; top: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0,0,0,0.8);
-    display: none;
-}
-main .category-thumb .link-overlay .link-object {
-    width: 100%;
-    height: 100%;
-    display: table;
-}
-main .category-thumb .link-overlay .link-object > div {
-    display: table-cell;
     text-align: center;
     vertical-align: middle;
-}
-main .category-thumb .link-overlay .link-object .links {
-    height: 100%;
-    max-height: 75%;
-    width: 100%;
-    max-width: 56.25%;
-    display: table;
-    border-radius: 50%;
-    margin: auto;
     overflow: hidden;
 }
-main .category-thumb .link-overlay .link-object a {
+main .category-thumb .link-overlay .background-color {
     width: 100%;
-    height: 50%;
-    color: rgba(255,255,255,0.8);
-    text-decoration: none;
-    display: table;
-    transition: color 500ms ease;
+    height: 100%;
+    position: absolute;
+    left: 0; top: 0;
+    background-color: rgba(0,0,0,0.5);
+    transition: transform 0.4s,background 0.3s;
 }
-main .category-thumb .link-overlay .link-object a span {
-    font-style: italic;
-    display: table-cell;
+main .category-thumb .link-overlay .background-image {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    left: 0;
+    top: 0;
+    background-position: center center;
+    background-size: cover;
+    transition: transform 0.4s linear;
+    transform: scale(1.05);
+    filter: blur(1.2px);
 }
-main .category-thumb .link-overlay .link-object a:hover {
+main .category-thumb .link-overlay a.cat-cta {
+    padding: 5px;
+    border-width: 1px;
+    border-style: solid;
 
+    background-color: rgba(255,255,255,0.8);
+    border-color: rgba(255,255,255,0);
+    color: rgba(0,0,0,0.6);
+
+    min-width: 100px;
+    max-width: 115px;
+    display: inline-block;
+    position: relative;
+    top: calc(50% - 16px);
+    border-radius: 2px;
+    text-decoration: none;
+    transition: background-color 0.5s, border-color 0.5s, color 0.5s;
+    z-index: 2;
 }
-main .category-thumb .link-overlay .link-object a:first-child {
-    border-bottom: 1px solid rgba(255,255,255,0.5);
+main .category-thumb .link-overlay a.cat-cta:hover {
+    color: rgba(255,255,255,0.8);
+    background-color: rgba(0,0,0,0.5);
+    border-color: rgba(255,255,255,0.8);
 }
-main .category-thumb .link-overlay .link-object a:first-child span {
-    vertical-align: bottom;
-    padding-bottom: 11px;
-    animation: slide_bottom 300ms ease;
+main .category-thumb .link-overlay a.cat-cta:hover ~ div.background-image {
+    transform: scale(1);
+    filter: blur(0px);
 }
-main .category-thumb .link-overlay .link-object a:last-child span {
-    vertical-align: top;
-    padding-top: 10px;
-    animation: slide_top 300ms ease;
+main .category-thumb .link-overlay a.cat-cta:hover ~ div.background-color {
+    background-color: rgba(0,0,0,0);
+    transform: scale(0);
 }
-main .category-thumb .link-overlay .link-object a:hover {
-    color: #2fafef;
-}
+
 main .thumb-box .title {
     text-align: center;
     padding: 4px;
 }
 footer {
-
     width: 100%;
     height: 40px;
     line-height: 40px;

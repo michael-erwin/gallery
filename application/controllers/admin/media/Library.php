@@ -35,7 +35,7 @@ class Library extends CI_Controller
         $data['json']['breadcrumbs'] = json_encode($this->breadcrumbs);
 
         // Page objects.
-        $data['objects']  = $this->load->view('admin/v_object_image_editor','',true);
+        $data['objects']  = $this->load->view('admin/v_object_photo_editor','',true);
         $data['objects'] .= $this->load->view('admin/v_object_video_editor','',true);
         $data['objects'] .= $this->load->view('admin/v_object_category_selector',$content,true);
 
@@ -54,7 +54,7 @@ class Library extends CI_Controller
         $body = clean_whitespace($this->load->view('admin/v_content_library',$content,true));
 
         // Page objects.
-        $objects = $this->load->view('admin/v_object_image_editor','',true);
+        $objects = $this->load->view('admin/v_object_photo_editor','',true);
         $objects .= $this->load->view('admin/v_object_video_editor','',true);
         $objects .= $this->load->view('admin/v_object_category_selector',$content,true);
 
@@ -82,8 +82,7 @@ class Library extends CI_Controller
 
     public function js()
     {
-        $data['categories'] = json_encode($this->m_category->get_all());
         header("Content-Type: application/javascript");
-        $this->load->view('admin/scripts/v_scripts_media_gallery',$data);
+        $this->load->view('admin/scripts/v_scripts_media_gallery');
     }
 }

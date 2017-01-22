@@ -1,93 +1,294 @@
 <?php
 /**
-* 
+*
 */
 class Categories extends CI_Controller
 {
-    
+
     function __construct()
     {
         parent::__construct();
         $this->load->model('m_category');
     }
 
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
     public function _remap()
     {
-        $method = $this->uri->segment(2);
+        $action = $this->uri->segment(2);
         $param_1 = $this->uri->segment(3);
         $param_2 = $this->uri->segment(4);
+        $param_3 = $this->uri->segment(5);
 
-        if($method == "add")
+        if($action == "manage")
         {
-            $this->add();
+            if($param_1 == "add")
+            {
+                $this->add();
+            }
+            elseif($param_1 == "update")
+            {
+                $this->update();
+            }
+            elseif($param_1 == "delete")
+            {
+                $this->delete();
+            }
+            elseif($param_1 == "get_all")
+            {
+                $media_type = clean_alpha_text($this->input->get('type'));
+                $this->get_all($media_type);
+            }
         }
-        elseif($method == "update")
-        {
-            $this->update();
-        }
-        elseif($method == "delete")
-        {
-            $this->delete();
-        }
-        elseif($method == "get_all")
-        {
-            $this->get_all();
-        }
-        elseif(preg_match('/^[a-zA-z\-\_]+-[0-9]+$/', $method)) // If method parameter follows "category-name-1" pattern.
-        {
-            $media_type = ($param_1 == "videos")? $param_1 : "images";
-            $category_id = (!empty(clean_numeric_text($method)))? explode('-', $method) : 1;
-            $category_id = is_array($category_id)? end($category_id) : $category_id;
-            $category_name = explode('-',$method);
-            array_pop($category_name);
-            $category_name = implode('-', $category_name);
-            $page = !empty($param_2)? trim($param_2) : 1;
-            $page = preg_match('/^[0-9]+$/', $page)? $page : 1;
-            // Display entries belonging to this particular category.
-            $this->fetch_categories($media_type,$category_name,$category_id,$page);
+        elseif($action == "photos" || $action == "videos")
+        {  // If $action parameter follows "categories/type" pattern.
+           // i.e. http://domain.com/categories/photos/
+
+            if(preg_match('/^([a-zA-z\-\_]+)-([0-9]+)$/', $param_1, $main_cat_match))
+            {  // If $param_1 parameter follows "main-category-name-1" pattern.
+               // i.e. http://domain.com/categories/photos/main-category-name-1
+               // Extract from URI name and id.
+
+                $main = [
+                    'type' => $action,
+                    'id' => $main_cat_match[2],
+                    'title' => $main_cat_match[1]
+                ];
+
+                if(preg_match('/^([a-zA-z\-\_]+)-([0-9]+)$/', $param_2, $sub_cat_match))
+                {  // If $param_2 parameter follows "sub-category-name-1" pattern.
+                   // i.e. http://domain.com/categories/photos/main-category-name-1/sub-category-name-2
+
+                    $sub = [
+                        'type' => $action,
+                        'id' => $sub_cat_match[2],
+                        'title' => $sub_cat_match[1]
+                    ];
+                    $page = preg_match('/^[0-9]+$/', $param_3)? $param_3 : 1;
+                    $this->display_media_items($action,$main['id'],$main['title'],$sub['id'],$sub['title'],$page);
+                }
+                else{
+                    $this->display_subcats($action,$main['id'],$main['title']);
+                }
+            }
+            else{
+                // Display main categories under photos media types.
+                $this->display_maincats($action);
+            }
         }
         else
         {
-            // Anything else fetch all categories.
-            $category_titles = [];
-            $data = [
-                "breadcrumbs" => "",
-                "category_thumbs" => "",
-                "search_widget" => $this->load->view('common/v_search_widget',['type'=>'images'],true)
-            ];
-            $pagination_data = [
-                'current_page' => 1,
-                'total_page' => 1,
-                'prev_disabled' => true,
-                'next_disabled' => true
-            ];
-            $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
-            $query = $this->db->query("SELECT * FROM `categories` WHERE `published`='yes' LIMIT 16");
-            $result = $query->result_array();
-            foreach($result as $category)
-            {
-                $seo_title = explode(' ', $category['title']);
-                $seo_title = end($seo_title).'-'.$category['id'];
-                $category_titles[] = strtolower($category['title']);
-                $data_thumb['title'] = $category['title'];
-                $data_thumb['icon'] = $category['icon'];
-                $data_thumb['images_link'] = base_url("categories/{$seo_title}/images/");
-                $data_thumb['videos_link'] = base_url("categories/{$seo_title}/videos/");
-                $data['category_thumbs'] .= $this->load->view('common/v_category_thumb_frontend',$data_thumb,true);
-            }
-            $breadcrumbs['crumbs'] = [
-                'Home' => base_url(),
-                'Categories' => ""
-            ];
-            $data['page_title'] = "Gallery - Categories";
-            $data['meta_description'] = "Select category for photos and videos.";
-            $data['meta_keywords'] = implode(',', $category_titles);
-            $data['breadcrumbs'] = $this->load->view('common/v_breadcrumbs_frontend',$breadcrumbs,true);
-            $this->load->view("v_results_layout",$data);
+            $this->display_media_types();
         }
     }
 
-    private function index($result, $page_meta=null)
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
+    private function display_media_types()
+    {
+        // Page meta information.
+        $data['page_title'] = "Categories";
+        $data['meta_description'] = "Select category types";
+        $data['meta_keywords'] = "";
+        // Build search wdiget html markups.
+        $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>"photos"],true);
+        // Build pagination html markups.
+        $pagination_data = [
+            'type' => "photos",
+            'keywords' => "",
+            'category_id' => "",
+            'category_name' => "",
+            'current_page' => 1,
+            'total_page' => 1,
+            'prev_disabled' => true,
+            'next_disabled' => true
+        ];
+        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
+        // Build breadcrumbs html markups.
+        $crumbs = ['Home'=>base_url(),'Categories'=>""];
+        $data['breadcrumbs'] = $this->load->view('common/v_breadcrumbs_frontend',['crumbs'=>$crumbs],true);
+        // Build category thumbs html markups.
+        $data['category_thumbs'] = "";
+        $items = [
+            ["icon"=>"assets/img/category_icons/core/photos.jpg","link"=>base_url('categories/photos'),"title"=>"Photos"],
+            ["icon"=>"assets/img/category_icons/core/videos.jpg","link"=>base_url('categories/videos'),"title"=>"Videos"]
+        ];
+        foreach($items as $item)
+        {
+            $data['category_thumbs'] .= preg_replace("/\n/",'',$this->load->view('common/v_category_thumb_frontend',$item,true));
+        }
+        $this->load->view("v_results_layout",$data);
+    }
+
+    /**
+    * Function description.
+    * @param  string  $type  Media type name in plural i.e. photos.
+    * @return void           Flush HTML buffer to browser.
+    *
+    */
+    private function display_maincats($type)
+    {
+        // Page meta information.
+        $data['page_title'] = "Categories";
+        $data['meta_description'] = "Select category types";
+        $data['meta_keywords'] = "";
+        // Build breadcrumbs html markups.
+        $crumbs = ['Home'=>base_url(),'Categories'=>base_url('categories'),ucfirst($type) => ""];
+        $data['breadcrumbs'] = $this->load->view('common/v_breadcrumbs_frontend',['crumbs'=>$crumbs],true);
+        // Build search wdiget html markups.
+        $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>$type],true);
+        // Build pagination html markups.
+        $pagination_data = [
+            'type' => $type,
+            'keywords' => "",
+            'category_id' => "",
+            'category_name' => "",
+            'current_page' => 1,
+            'total_page' => 1,
+            'prev_disabled' => true,
+            'next_disabled' => true
+        ];
+        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
+        // Build category thumbs html markups.
+        $data['category_thumbs'] = "";
+        $sql = "SELECT * FROM `categories` WHERE type='".rtrim(clean_title_text($type),"s")."' AND `level`=1 AND `published`='yes' ORDER BY `title`";
+        $query = $this->db->query($sql); $categories = $query->result_array();
+        foreach($categories as $item)
+        {
+            $sef_title = preg_replace('/\s/','-',strtolower($item['title'])).'-'.$item['id'];
+            $icon_url = empty(trim($item['icon']))? "" : empty(parse_url($item['icon'], PHP_URL_SCHEME))? base_url($item['icon']) : $item['icon'];
+            $item_info = [
+                'icon' => $icon_url,
+                'title' => ucfirst($item['title']),
+                'link' => base_url("categories/{$type}/{$sef_title}")
+            ];
+            $data['category_thumbs'] .= $this->load->view('common/v_category_thumb_frontend',$item_info,true);
+        }
+        $data['category_thumbs'] = compress_html($data['category_thumbs']);
+        $this->load->view("v_results_layout",$data);
+    }
+
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
+    private function display_subcats($type,$main_id,$main_title)
+    {
+        // Page meta information.
+        $data['page_title'] = "Categories";
+        $data['meta_description'] = "Select category types";
+        $data['meta_keywords'] = "";
+        // Build breadcrumbs html markups.
+        $main_link = preg_replace('/\s/','-',strtolower($main_title)).'-'.$main_id;
+        $crumbs = [
+            'Home'=>base_url(),
+            'Categories'=>base_url('categories'),
+            ucfirst($type)=>base_url("categories/{$type}"),
+            ucfirst($main_title)=>""
+        ];
+        $data['breadcrumbs'] = $this->load->view('common/v_breadcrumbs_frontend',['crumbs'=>$crumbs],true);
+        // Build search wdiget html markups.
+        $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>$type],true);
+        // Build pagination html markups.
+        $pagination_data = [
+            'type' => $type,
+            'keywords' => "",
+            'category_id' => "",
+            'category_name' => "",
+            'current_page' => 1,
+            'total_page' => 1,
+            'prev_disabled' => true,
+            'next_disabled' => true
+        ];
+        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
+        // Build category thumbs html markups.
+        $data['category_thumbs'] = "";
+        $sql = "SELECT * FROM `categories` WHERE type='".rtrim(clean_title_text($type),"s")."' AND `parent_id`={$main_id} AND `level`=2 AND `published`='yes' ORDER BY `title`";
+        $query = $this->db->query($sql); $categories = $query->result_array();
+        foreach($categories as $item)
+        {
+            $sef_title = preg_replace('/\s/','-',strtolower($item['title'])).'-'.$item['id'];
+            $icon_url = empty(trim($item['icon']))? "" : empty(parse_url($item['icon'], PHP_URL_SCHEME))? base_url($item['icon']) : $item['icon'];
+            $item_info = [
+                'icon' => $icon_url,
+                'title' => ucfirst($item['title']),
+                'link' => base_url("categories/{$type}/{$main_link}/{$sef_title}")
+            ];
+            $data['category_thumbs'] .= $this->load->view('common/v_category_thumb_frontend',$item_info,true);
+        }
+        $data['category_thumbs'] = compress_html($data['category_thumbs']);
+        $this->load->view("v_results_layout",$data);
+    }
+
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
+    private function display_media_items($type,$main_id,$main_title,$sub_id,$sub_title,$page)
+    {
+        // Page meta information.
+        $data['page_title'] = "Categories";
+        $data['meta_description'] = "Select category types";
+        $data['meta_keywords'] = "";
+        // Build breadcrumbs html markups.
+        $main_link = preg_replace('/\s/','-',strtolower($main_title)).'-'.$main_id;
+        //$sub_link = preg_replace('/\s/','-',strtolower($main_title)).'-'.$main_id;
+        $crumbs = [
+            'Home' => base_url(),
+            'Categories' => base_url('categories'),
+            ucfirst($type) => base_url("categories/{$type}"),
+            ucfirst($main_title) => base_url("categories/{$type}/{$main_link}"),
+            ucfirst($sub_title) => ""
+        ];
+        $data['breadcrumbs'] = $this->load->view('common/v_breadcrumbs_frontend',['crumbs'=>$crumbs],true);
+        // Build search wdiget html markups.
+        $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>$type],true);
+        // Build pagination html markups.
+        $pagination_data = [
+            'type' => $type,
+            'keywords' => "",
+            'category_id' => "",
+            'category_name' => "",
+            'current_page' => 1,
+            'total_page' => 1,
+            'prev_disabled' => true,
+            'next_disabled' => true
+        ];
+        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
+        // Build results thumbs.
+        //$thumb_data['data'] = json_encode($item);
+        // $thumb_data['title'] = $item['title'];
+        // $thumb_data['uid'] = $item['uid'];
+        // $thumb_data['seo_title'] = preg_replace('/\s/', '-', $item['title']).'-'.$item['uid'];
+        // $data['thumbs'] .= $this->load->view('common/v_result_thumbs_photos',$thumb_data,true);
+        // TODO: Make properly pagination output.
+        $data['thumbs'] = "";
+        $sql = "SELECT * FROM `{$type}` WHERE `category_id`={$sub_id}";
+        $query = $this->db->query($sql); $result = $query->result_array();
+        foreach($result as $item)
+        {
+            $thumb_data['title'] = $item['title'];
+            $thumb_data['uid'] = $item['uid'];
+            $thumb_data['seo_title'] = preg_replace('/\s/', '-', $item['title']).'-'.$item['uid'];
+            $data['thumbs'] .= $this->load->view("common/v_result_thumbs_{$type}",$thumb_data,true);
+        }
+        $data['thumbs'] = compress_html($data['thumbs']);
+        $this->load->view("v_results_layout",$data);
+    }
+
+    private function results_layout($result, $page_meta=null)
     {
         $data = [];
         $data['thumbs'] = '';
@@ -104,10 +305,10 @@ class Categories extends CI_Controller
         }
 
         // Search widget and thumbnails display logic.
-        if($result['items']['type'] == "images")
+        if($result['items']['type'] == "photos")
         {
-            $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>'images'],true);
-            
+            $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>'photos'],true);
+
             if($result['items']['total'] > 0)
             {
                 foreach ($result['items']['entries'] as $item)
@@ -116,14 +317,14 @@ class Categories extends CI_Controller
                     $thumb_data['title'] = $item['title'];
                     $thumb_data['uid'] = $item['uid'];
                     $thumb_data['seo_title'] = preg_replace('/\s/', '-', $item['title']).'-'.$item['uid'];
-                    $data['thumbs'] .= $this->load->view('common/v_result_thumbs_images',$thumb_data,true);
+                    $data['thumbs'] .= $this->load->view('common/v_result_thumbs_photos',$thumb_data,true);
                 }
             }
             else
             {
                 $data['thumbs'] = '<div class="alert alert-warning">No results.</div>';
             }
-            
+
         }
         else if($result['items']['type'] == "videos")
         {
@@ -144,7 +345,7 @@ class Categories extends CI_Controller
             {
                 $data['thumbs'] = '<div class="alert alert-warning">No results.</div>';
             }
-            
+
         }
 
         // Pagination display logic.
@@ -160,94 +361,40 @@ class Categories extends CI_Controller
         ];
         if($result['page']['current'] == 1) $pagination_data['prev_disabled'] = true;
         if($result['page']['current'] >= $result['page']['total']) $pagination_data['next_disabled'] = true;
-        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
 
-        // Load page layout.
+        $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
         $this->load->view("v_results_layout",$data);
     }
 
-    private function fetch_categories($media_type,$cat_name,$cat_id,$page)
-    {
-        $media_type = ($media_type != "")? $media_type : "images;";
-        $crumbs = [
-            'Home' => base_url(),
-            'Categories' => base_url("categories"),
-            $cat_name." ({$media_type})" => ""
-        ];
-        $page = clean_numeric_text($page)-1;
-        $category = clean_numeric_text($cat_id);
-        $limit = clean_numeric_text($this->input->get('l'));
-        $limit = empty($limit)? 20 : $limit;
-        $offset = $page * $limit;
-        $mode = $this->input->get("m");
-
-        // Retrieve category details.
-        $sql_category = "SELECT `title`,`description` FROM `categories` WHERE `id`={$category}";
-        $data_category = $this->db->query($sql_category);
-        $info_category = $data_category->result_array()[0];
-        $page_meta = [
-            'title' => $info_category['title'],
-            'description' => $info_category['description'],
-            'keywords' => strtolower($info_category['title'])
-        ];
-
-        // Retrieve all items belonging to this particular category.
-        $sql_items = "SELECT SQL_CALC_FOUND_ROWS * FROM `{$media_type}`";
-        $sql_items .= ($media_type == "videos")? " WHERE `category_id` = {$category} AND `complete`=1 " : " WHERE `category_id` = {$category} ";
-        $sql_items .= "LIMIT {$limit} OFFSET {$offset}";
-
-        $data_items = $this->db->query($sql_items);
-        $rows_items = $this->db->query("SELECT FOUND_ROWS() AS `total`");
-        
-        $items = $data_items->result_array();
-        $total = $rows_items->result_array()[0]['total'];
-
-        $response = [
-            'type' => $media_type,
-            'keywords' => "",
-            'category_id' => $cat_id,
-            'category_name' => $cat_name,
-            'crumbs' => $crumbs,
-            'route' => 'categories',
-            'page' => [
-                'current' => $page+1,
-                'total' => ceil($total / $limit),
-                'limit' => $limit
-            ],
-            'items' => [
-                'type' => $media_type,
-                'entries' => $items,
-                'total' => $total
-            ]
-        ];
-
-        // Output types:
-        if($mode && $mode == "json")
-        {
-            header("Content-Type: application/json");
-            echo json_encode($response);
-        }
-        else
-        {
-            $this->index($response,$page_meta);
-        }
-    }
-
+    /**
+    * Inserts new category record.
+    * @param  integer  $level        Post variable with values 1 or 2.
+    * @param  string   $type         Post variable - media type in plural form i.e. photos.
+    * @param  string   $title        Post variable description.
+    * @param  string   $description  Post variable description.
+    * @param  string   $icon         Post variable description.
+    * @param  string   $publish      Post variable description.
+    * @param  integer  $parent_id    Post variable description.
+    * @return string                 JSON text response.
+    *
+    */
     private function add()
     {
+        // Required params via post.
+        $level = clean_numeric_text(trim($this->input->post('level')));
+        $type = rtrim(clean_alpha_text(trim($this->input->post('type'))),'s'); // Strips 's' at the end.
+        $title = clean_title_text(trim($this->input->post('title')));
+        $description = clean_body_text(trim($this->input->post('description')));
+        $icon = trim($this->input->post('icon'));
+        $publish = clean_alpha_text(trim($this->input->post('publish')));
+        $parent_id = clean_numeric_text(trim($this->input->post('parent_id')));
+
         $errors = 0;
         $response = [
             "status" => "error",
             "message" => "Unknown error has occured.",
             "data" => "null"
         ];
-
-        // Required fields.
-        $title = clean_title_text(trim($this->input->post('title')));
-        $description = clean_body_text(trim($this->input->post('description')));
-        $icon = trim($this->input->post('icon'));
-        $publish = clean_alpha_text(trim($this->input->post('publish')));
-
         // Process data.
         if(strlen($title) == 0)
         {
@@ -258,12 +405,12 @@ class Categories extends CI_Controller
         {
             $publish = "yes";
         }
-        if(!$this->m_category->add($title, $description, $icon, $publish))
+        if(!$this->m_category->add($level, $type, $title, $description, $icon, $publish, $parent_id))
         {
             $errors++;
             $response['message'] .= "Database insert failed. ";
         }
-        if(!$data = $this->m_category->get_all())
+        if(!$data = $this->m_category->get_all($type))
         {
             $errors++;
             $response['message'] .= "Data fetch failed. ";
@@ -281,21 +428,35 @@ class Categories extends CI_Controller
         header("Content-Type: application/json");
         echo json_encode($response);
     }
+
+    /**
+    * Update existing category record.
+    * @param  string   $type         Post variable - media type in plural form i.e. photos.
+    * @param  string   $title        Post variable description.
+    * @param  string   $description  Post variable description.
+    * @param  string   $icon         Post variable description.
+    * @param  string   $publish      Post variable description.
+    * @param  integer  $parent_id    Post variable description.
+    * @return string                 JSON text response.
+    *
+    */
     private function update()
     {
+        // Required fields.
+        $id = clean_numeric_text(trim($this->input->post('id')));
+        $type = rtrim(clean_alpha_text(trim($this->input->post('type'))),'s'); // Strips 's' at the end.
+        $title = clean_title_text(trim($this->input->post('title')));
+        $description = clean_body_text(trim($this->input->post('description')));
+        $icon = trim($this->input->post('icon'));
+        $publish = clean_alpha_text(trim($this->input->post('publish')));
+        $parent_id = clean_numeric_text(trim($this->input->post('parent_id')));
+
         $errors = 0;
         $response = [
             "status" => "error",
             "message" => "Unknown error has occured.",
             "data" => "null"
         ];
-
-        // Required fields.
-        $id = clean_numeric_text(trim($this->input->post('id')));
-        $title = clean_title_text(trim($this->input->post('title')));
-        $description = clean_body_text(trim($this->input->post('description')));
-        $icon = trim($this->input->post('icon'));
-        $publish = clean_alpha_text(trim($this->input->post('publish')));
 
         // Process data.
         if(strlen($id) == 0)
@@ -312,12 +473,12 @@ class Categories extends CI_Controller
         {
             $publish = "yes";
         }
-        if(!$this->m_category->update($id, $title, $description, $icon, $publish))
+        if(!$this->m_category->update($id, $title, $description, $icon, $publish, $parent_id))
         {
             $errors++;
             $response['message'] .= "Database update failed. ";
         }
-        if(!$data = $this->m_category->get_all())
+        if(!$data = $this->m_category->get_all($type))
         {
             $errors++;
             $response['message'] .= "Data fetch failed. ";
@@ -335,81 +496,96 @@ class Categories extends CI_Controller
         header("Content-Type: application/json");
         echo json_encode($response);
     }
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
     private function delete()
     {
         $errors = 0;
         $response = [
             "status" => "error",
-            "message" => "Unknown error has occured.",
+            "message" => "Unknown error has occured. ",
             "data" => "null"
         ];
+        $accept_media_type_ids = ["photo","video"];
 
         // Required fields.
-        $id = $this->input->post('id');
-        $ids = [];
-        if(is_array($id))
+        $media_type = clean_alpha_text($this->input->post('type'));
+        $media_type_id = rtrim($media_type,'s');
+        $item_id = $this->input->post('id');
+
+        // Check media type is accurate.
+        if(in_array($media_type_id,$accept_media_type_ids))
         {
-            foreach($id as $row)
+            $ids = [];
+            if(is_array($item_id))
             {
-                $entry = clean_numeric_text($row);
-                if(strlen($entry) == 0)
+                foreach($item_id as $row)
                 {
-                    $errors++;
-                    break;
+                    $entry = clean_numeric_text($row);
+                    if(strlen($entry) == 0)
+                    {
+                        $errors++;
+                        break;
+                    }
+                    elseif($row == 1)
+                    {
+                        $errors++;
+                        $response['message'] = "Cannot delete default item. ";
+                        break;
+                    }
+                    else
+                    {
+                        $ids[] = $entry;
+                    }
                 }
-                elseif($row == 1)
+                if(count($ids) > 0)
                 {
-                    $errors++;
-                    $response['message'] = "Cannot delete default item. ";
-                    break;
+                    $item_id = $ids;
                 }
                 else
                 {
-                    $ids[] = $entry;
+                    $item_id = "";
                 }
             }
-            if(count($ids) > 0)
-            {
-                $id = $ids;
+            else {
+                $item_id = clean_numeric_text($this->input->post('id'));
             }
-            else
+            // Ensure $item_id is not empty.
+            if(!is_array($item_id))
             {
-                $id = "";
+                if(strlen($item_id) == 0)
+                {
+                    $errors++;
+                    $response['message'] = "ID field is invalid. ";
+                }
             }
-        }
-        else {
-            $id = clean_numeric_text($this->input->post('id'));
-        }
-
-        // Process data.
-        if(!is_array($id))
-        {
-            if(strlen($id) == 0)
+            // Delete action:
+            // Deletes all associated subcategories.
+            // Move all associated media to category 1 (uncategorized).
+            if(!$deleted_rows = $this->m_category->delete($item_id,$media_type_id))
             {
                 $errors++;
-                $response['message'] = "ID field is invalid. ";
+                $response['message'] .= "Row delete failed. ";
+            }
+            // Get latest record after delete.
+            if(!$data = $this->m_category->get_all($media_type_id))
+            {
+                $errors++;
+                $response['message'] .= "Data fetch failed. ";
             }
         }
-        if(!$deleted_rows = $this->m_category->delete($id))
+        else
         {
+            $response['message'] .= "Unsupported media id : {$media_type_id}. ";
             $errors++;
-            $response['message'] .= "Row delete failed. ";
         }
-        if(!$data = $this->m_category->get_all())
-        {
-            $errors++;
-            $response['message'] .= "Data fetch failed. ";
-        }
-
         // Check for errors before output.
         if($errors == 0)
         {
-            // List of ids.
-            if(is_array($id)) $id = implode(',', $id);
-
-            // Transfer images to uncategorized.
-            $this->db->query("UPDATE `images` SET `category_id`=1 WHERE `category_id` IN ({$id})");
-
             $response['status'] = "ok";
             $response['message'] = "{$deleted_rows} category item(s) deleted.";
             $response['data'] = $data;
@@ -419,14 +595,21 @@ class Categories extends CI_Controller
         header("Content-Type: application/json");
         echo json_encode($response);
     }
-    private function get_all()
+    /**
+    * Function description.
+    * @param  type  $variable  Variable description.
+    * @return type             Return value description.
+    *
+    */
+    private function get_all($type)
     {
+        $type = rtrim($type,'s'); // Removes letter 's' at the end.
         $response = [
             "status" => "error",
             "message" => "Unknown error has occured.",
             "data" => null
         ];
-        if($data = $this->m_category->get_all())
+        if($data = $this->m_category->get_all($type))
         {
             $response['status'] = "ok";
             $response['message'] = "Success.";
@@ -434,11 +617,5 @@ class Categories extends CI_Controller
         }
         header("Content-Type: application/json");
         echo json_encode($response);
-    }
-    private function test()
-    {
-        header("Content-Type: text/plain");
-        $sample_text = 'The quick brown fox jumps over the lazy dog. 1234567890 !@#$%^&*() +-_.';
-        echo clean_body_text($sample_text);
     }
 }

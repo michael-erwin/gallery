@@ -5,6 +5,6 @@
         */
 
         (function(){
-            admin_app.category_editor.init();
             admin_app.category.init();
+            admin_app.category_editor.init();
         })();

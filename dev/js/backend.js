@@ -19,6 +19,10 @@ Array.prototype.remove = function() {
     }
     return this;
 };
+// Capitalize first letter of text.
+String.prototype.ucfirst = function() {
+    return this.charAt(0).toUpperCase() + this.slice(1);
+}
 
 var admin_page = {};
 var admin_app = {};

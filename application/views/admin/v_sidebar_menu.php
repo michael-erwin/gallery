@@ -9,6 +9,11 @@
                             <i class="fa fa-users"></i> <span>Users</span>
                         </a>
                     </li>
+                    <li data-menu="roles">
+                        <a class="page-link" href="<?php echo base_url();?>admin/roles">
+                            <i class="fa fa-address-card"></i> <span>Roles</span>
+                        </a>
+                    </li>
                     <li data-menu="media" class="treeview">
                         <a href="#">
                             <i class="fa fa-tv"></i> <span>Media</span>

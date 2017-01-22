@@ -12,9 +12,10 @@ admin_app.uploader =
     },
     data: {
         media_type: "photos",
-        media_category: 1,
+        media_category_id: 1,
         allowed_photos: ['image/jpeg','image/pjpeg','image/png','image/bmp','image/x-windows-bmp','image/gif'],
         allowed_videos: ['video/mp4','video/mpeg','video/mpeg','video/quicktime','video/x-matroska','video/x-flv','video/x-msvideo','video/x-ms-wmv'],
+        category_list: []
     },
     init: function() {
 
@@ -30,8 +31,8 @@ admin_app.uploader =
         this.objects.media_type_box = $('#content_toolbar_form [name="type"]');
 
         // Set media selection events.
-        this.objects.media_type_box.unbind('change').on('change',this.setMedia.bind(this));
-        this.objects.category_box.unbind('change').on('change',this.setMedia.bind(this));
+        this.objects.media_type_box.unbind('change').on('change',this.setMediaType.bind(this));
+        this.objects.category_box.unbind('change').on('change',function(){this.data.media_category_id = this.objects.category_box.val();}.bind(this));
 
         // Initialize drop zone box event handlers.
         this.objects.drop_zone.on('dragenter', function (e) {
@@ -76,6 +77,7 @@ admin_app.uploader =
             e.preventDefault();
         });
         this.render();
+        this.renderCategoryDropdown();
     },
     render: function() {
         var remove_indexes = [];
@@ -97,9 +99,22 @@ admin_app.uploader =
         // Set media type selection.
         this.objects.media_type_box.val(this.data.media_type);
     },
-    setMedia: function() {
+    setMediaType: function() {
         this.data.media_type = this.objects.media_type_box.val();
-        this.data.media_category = this.objects.category_box.val();
+        // Fetch category list for selected media type
+        $.ajax({
+            "method": "get",
+            "context": this,
+            "url": site.base_url+'admin/media/categories/json',
+            "data": "list="+this.data.media_type,
+            "error" : function(jqXHR,textStatus,errorThrown){
+                toastr["error"]("Failed to load category list.", "Error "+jqXHR.status);
+            },
+            "success": function(response){
+                this.data.category_list = response;
+                this.renderCategoryDropdown();
+            }
+        });
     },
     getNextUpload() {
         var files = this.objects.files;
@@ -130,7 +145,7 @@ admin_app.uploader =
         // Form data.
         var form_data = new FormData();
         form_data.append('file', file_widget.file);
-        form_data.append('category_id', this.data.media_category);
+        form_data.append('category_id', this.data.media_category_id);
 
         // Events.
         xhr.error = function(e) {
@@ -151,12 +166,12 @@ admin_app.uploader =
                     if(media_type == "photos") {
 
                         // Attach events.
-                        file_widget.onEdit(function(){admin_app.image_editor.open(id)});
+                        file_widget.onEdit(function(){admin_app.photo_editor.open(id)});
                         file_widget.onDelete(function(){
                             var delete_item = function() {
                                 $.ajax({
                                     "method": "post",
-                                    "url": site.base_url+'images/delete',
+                                    "url": site.base_url+'photos/delete',
                                     "data": "id="+id,
                                     "error" : function(jqXHR,textStatus,errorThrown){
                                         toastr["error"]("Failed to delete \""+item_name+"\".", "Error "+jqXHR.status);
@@ -263,6 +278,43 @@ admin_app.uploader =
         if(next_upload) { // No ongoing upload.
             admin_app.uploader.upload(next_upload);
         }
+    },
+    renderCategoryDropdown() {
+        var category_structure = {};
+        var category_list = this.data.category_list;
+        var category_html = "";
+        // Build category structure.
+        for(var i=0;i<category_list.length;i++) {
+            if(category_list[i].level == 1){
+                category_structure['parent_'+category_list[i].id] = {self:category_list[i],children:[]};
+            }
+            if(category_list[i].level == 2){
+                var my_parent_id = 'parent_'+category_list[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(category_list[i]);
+                }
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[category_list[i]]};
+                }
+            }
+        }
+        // Create HTML output.
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                category_html += '<option value="'+main_cat['self'].id+'" selected>'+main_cat['self'].title+'</option>';
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.category_box.html(category_html);
     },
     handleInput(files_list) {
         var type = this.data.media_type;

@@ -13,7 +13,7 @@ admin_app.category_selector =
             id: null,
             category_id: null
         },
-        categories: null,
+        items:[],
         selector_visible: false,
         endpoint: null,
         passed_fn: null
@@ -31,24 +31,56 @@ admin_app.category_selector =
         // Bind event handlers.
         this.self.unbind('hidden.bs.modal').on('hide.bs.modal', (function(){
             this.data.selector_visible = false;
-            $('select[data-id="bulk_operation_box"]').val('default');
+            $('select[data-id="bulk_operation"]').val('default');
         }).bind(this));
         this.objects.selection_form.unbind().on('submit', this.save.bind(this));
     },
     render: function(){
-        if(this.data.categories){
-            var categories = this.data.categories;
-            var cat_markup = "";
-            for(var i=0;i<categories.length;i++) {
-                if(this.data.item.category_id == categories[i].id) {
-                    cat_markup += '<option value="'+categories[i].id+'" selected="true">'+categories[i].title+'</option>';
+        var category_structure = {};
+        var category_html = "";
+        var categories = admin_app.library.data.category_list;
+        // Build category structure.
+        for(var i=0;i<categories.length;i++) {
+            if(categories[i].level == 1){
+                category_structure['parent_'+categories[i].id] = {self:categories[i],children:[]};
+            }
+            if(categories[i].level == 2){
+                var my_parent_id = 'parent_'+categories[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(categories[i]);
                 }
-                else {
-                    cat_markup += '<option value="'+categories[i].id+'">'+categories[i].title+'</option>';
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[categories[i]]};
                 }
             }
-            this.objects.selection_box.html(cat_markup);
         }
+        // Create HTML output.
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                if(this.data.item.category_id == main_cat['self'].id){ // Select category for currently selected item.
+                    category_html += '<option value="'+main_cat['self'].id+'" selected>'+main_cat['self'].title+'</option>';
+                }
+                else{
+                    category_html += '<option value="'+main_cat['self'].id+'">'+main_cat['self'].title+'</option>';
+                }
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        if(this.data.item.category_id == main_cat['children'][x].id){ // Select category for currently selected item.
+                            category_html += '<option value="'+main_cat['children'][x].id+'" selected>'+main_cat['children'][x].title+'</option>';
+                        }
+                        else{
+                            category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                        }
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.selection_box.html(category_html);
         if(this.data.selector_visible){
             this.self.modal('show');
         }
@@ -64,7 +96,7 @@ admin_app.category_selector =
         }
     },
     open: function(endpoint,data,fn){
-        this.data.endpoint = endpoint;
+        this.data.endpoint = endpoint; //
         this.data.item.id = data.id;
         this.data.item.category_id = data.category_id;
         this.enableState();

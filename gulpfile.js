@@ -22,10 +22,10 @@ gulp.task('theme-css',function(){
     ]);
 });
 
-gulp.task('backend-css',function(){
+gulp.task('css',function(){
     /* Compile & minify backend css. */
     pump([
-        gulp.src('dev/scss/backend.min.scss'),
+        gulp.src(['dev/scss/index-layout.scss','dev/scss/frontend-common.scss','dev/scss/backend.min.scss']),
         sass(),pref(),mcss(),
         gulp.dest('assets/css/')
     ]);
@@ -46,7 +46,7 @@ gulp.task('backend-js',function(){
             'dev/js/admin_page.content.js',
             'dev/js/admin_page.sidebar.js',
             'dev/js/admin_app.library.js',
-            'dev/js/admin_app.image_editor.js',
+            'dev/js/admin_app.photo_editor.js',
             'dev/js/admin_app.video_editor.js',
             'dev/js/admin_app.category.js',
             'dev/js/admin_app.category_editor.js',
@@ -67,7 +67,7 @@ gulp.task('frontend-js',function(){
             'dev/js/frontend_app.results.js',
             'dev/js/frontend_app.media_box.js',
             'dev/js/frontend_app.modal_media.js',
-            'dev/js/frontend_app.image_page_box.js',
+            'dev/js/frontend_app.photo_page_box.js',
             'dev/js/frontend_app.video_page_box.js'
         ]),
         strp(),gcat('frontend-app.js'),
@@ -78,7 +78,7 @@ gulp.task('frontend-js',function(){
 gulp.task('watch',function(){
     gulp.watch(
         ['dev/js/*','dev/scss/*.scss'],
-        ['backend-css','backend-js']
+        ['css','frontend-js','backend-js']
     );
 });
-gulp.task('default',['backend-css','backend-js']);
+gulp.task('default',['backend-css','frontend-js','backend-js']);

@@ -2,9 +2,9 @@ admin_app.library =
 {
     self: $('div.content-wrapper'),
     objects: {
-        media_type_box: null,
-        category_box: null,
-        bulk_operation_box: null,
+        media_type_dropdown_box: null,
+        category_dropdown_box: null,
+        bulk_operation_dropdown_box: null,
         search_form: null,
         search_box: null,
         display_quick_buttons: null,
@@ -23,16 +23,17 @@ admin_app.library =
         keyword: null,
         page: {current: 1,total: 0,limit: 24},
         items: {entries: [],total: 0},
-        type: 'images',
-        category: "",
+        type: 'photos',
+        category_id: "",
+        category_list: [],
         display: 'thumb',
         selected: []
     },
     init: function() {
         // Assign objects.
-        this.objects.media_type_box = this.self.find('[data-id="media_type"]');
-        this.objects.category_box = this.self.find('[data-id="category"]');
-        this.objects.bulk_operation_box = this.self.find('[data-id="bulk_operation_box"]');
+        this.objects.media_type_dropdown_box = this.self.find('[data-id="media_type"]');
+        this.objects.category_dropdown_box = this.self.find('[data-id="category"]');
+        this.objects.bulk_operation_dropdown_box = this.self.find('[data-id="bulk_operation"]');
         this.objects.search_form = this.self.find('[data-id="search_form"]');
         this.objects.search_box = this.self.find('[data-id="search_box"]');
         this.objects.display_quick_buttons = this.self.find('[data-id="quick_buttons"] button.display');
@@ -43,9 +44,9 @@ admin_app.library =
         this.objects.pagination_total = this.self.find('.m-pagination .total');
         this.objects.content_box = this.self.find('[data-id="content"]');
         // Bind events.
-        this.objects.media_type_box.unbind().on('change',this.pickType.bind(this));
-        this.objects.category_box.unbind().on('change',this.pickCategory.bind(this));
-        this.objects.bulk_operation_box.unbind().on('change',this.bulkAction.bind(this));
+        this.objects.media_type_dropdown_box.unbind().on('change',this.renderMediaType.bind(this));
+        this.objects.category_dropdown_box.unbind().on('change',this.setMediaCategory.bind(this));
+        this.objects.bulk_operation_dropdown_box.unbind().on('change',this.runBulkAction.bind(this));
         this.objects.search_form.unbind().on('submit',this.doSearch.bind(this));
         this.objects.search_box.unbind().on('keydown',this.liveSearch.bind(this));
         this.objects.display_quick_buttons.unbind().on('click',this.switchDisplay.bind(this));
@@ -54,7 +55,7 @@ admin_app.library =
         this.objects.pagination_index.unbind().on('keypress',this.goPage.bind(this));
         this.objects.pagination_next.unbind().on('click',this.nextPage.bind(this));
         // Trigger initial contents.
-        this.getData();
+        this.renderMediaType();
     },
     render: function(){
         // Build result entries.
@@ -63,18 +64,18 @@ admin_app.library =
 
         // Thumb & list display.
         if(entries.length > 0){
-            if(this.data.type == "images") {
+            if(this.data.type == "photos") {
                 if(this.data.display == 'thumb') {
                     for(var i=0; i < entries.length; i++) {
-                        var image = entries[i];
-                        var thumb = site.base_url+'media/images/public/256/'+image.uid+'.jpg';
-                        var selected = $.inArray(image.id,this.data.selected);
+                        var photo = entries[i];
+                        var thumb = site.base_url+'media/photos/public/256/'+photo.uid+'.jpg';
+                        var selected = $.inArray(photo.id,this.data.selected);
                         var item_class = (selected > -1)? "active" : "";
                         var checked = (selected > -1)? "checked" : "";
                         html +=
-                        '<div class="media-entry thumb-box col-lg-2 '+item_class+' col-md-3 col-sm-4 col-xs-6" data-id="'+image.id+'" data-category_id="'+image.category_id+'" data-title="'+image.title+'">'+
+                        '<div class="media-entry thumb-box col-lg-2 '+item_class+' col-md-3 col-sm-4 col-xs-6" data-id="'+photo.id+'" data-category_id="'+photo.category_id+'" data-title="'+photo.title+'">'+
                             '<div class="thumb" >'+
-                                '<a href="'+site.base_url+'images/view/lg/'+image.uid+'" title="'+image.title+'" class="image-link media-item image-preview" style="background-image:url(\''+thumb+'\')">'+
+                                '<a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" title="'+photo.title+'" class="image-link media-item photo-preview" style="background-image:url(\''+thumb+'\')">'+
                                 '</a>'+
                                 '<div class="controls">'+
                                     '<b title="Move to category" data-id="move_category"><i class="fa fa-lg fa-exchange"></i></b>'+
@@ -83,29 +84,29 @@ admin_app.library =
                                 '</div>'+
                             '</div>'+
                             '<div class="no-interact"></div>'+
-                            '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+image.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
+                            '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+photo.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                         '</div>';
                     }
                 }
                 else if(this.data.display == 'list') {
                     html += '<ul class="list-box">'
                     for(var i=0; i < entries.length; i++) {
-                        var image = entries[i];
-                        var thumb = site.base_url+'media/images/public/128/'+image.uid+'.jpg';
-                        var selected = $.inArray(image.id,this.data.selected);
+                        var photo = entries[i];
+                        var thumb = site.base_url+'media/photos/public/128/'+photo.uid+'.jpg';
+                        var selected = $.inArray(photo.id,this.data.selected);
                         var item_class = (selected > -1)? "active" : "";
                         var checked = (selected > -1)? "checked" : "";
                         html +=
-                            '<li class="media-entry list clearfix '+item_class+'" data-id="'+image.id+'" data-category_id="'+image.category_id+'" data-title="'+image.title+'">'+
+                            '<li class="media-entry list clearfix '+item_class+'" data-id="'+photo.id+'" data-category_id="'+photo.category_id+'" data-title="'+photo.title+'">'+
                                 '<div class="check-box">'+
-                                    '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+image.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
+                                    '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+photo.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                                 '</div>'+
-                                '<div class="image" style="background-image:url('+thumb+')">'+
-                                    '<a href="'+site.base_url+'images/view/lg/'+image.uid+'" class="image-preview">&nbsp;</a>'+
+                                '<div class="photo" style="background-image:url('+thumb+')">'+
+                                    '<a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" class="photo-preview">&nbsp;</a>'+
                                 '</div>'+
                                 '<div class="detail">'+
-                                    '<div class="title"><a href="'+site.base_url+'images/view/lg/'+image.uid+'" class="image-preview">'+image.title+'</a></div>'+
-                                    '<div class="description">'+image.description+'</div>'+
+                                    '<div class="title"><a href="'+site.base_url+'photos/view/lg/'+photo.uid+'" class="photo-preview">'+photo.title+'</a></div>'+
+                                    '<div class="description">'+photo.description+'</div>'+
                                 '</div>'+
                                 '<div class="controls float-right">'+
                                     '<button title="Move to category" class="btn btn-primary btn-xs" data-id="move_category"><i class="fa fa-exchange"></i></button>'+
@@ -159,7 +160,7 @@ admin_app.library =
                                     '<div class="check-box">'+
                                         '<label class="checkbox-ui" title="Bulk select"><input type="checkbox" '+checked+' value="'+video.id+'"><i class="glyphicon glyphicon-ok"></i></label>'+
                                     '</div>'+
-                                    '<div class="image" style="background-image:url('+thumb+')">'+
+                                    '<div class="photo" style="background-image:url('+thumb+')">'+
                                         '<a href="'+vlink+'" title="'+video.title+'" class="video-preview">&nbsp;</a>'+
                                     '</div>'+
                                     '<div class="detail">'+
@@ -209,13 +210,13 @@ admin_app.library =
         this.self.find('button[data-display="'+this.data.display+'"]').addClass('active');
         // Update bulk operation displays (toolbar item, quick buttons & display items).
         if(this.data.selected.length > 0){
-            if(!this.objects.bulk_operation_box.hasClass('active')) this.objects.bulk_operation_box.val('default');
-            this.objects.bulk_operation_box.addClass('active');
+            if(!this.objects.bulk_operation_dropdown_box.hasClass('active')) this.objects.bulk_operation_dropdown_box.val('default');
+            this.objects.bulk_operation_dropdown_box.addClass('active');
             this.objects.content_box.addClass('bulk_select_mode');
         }
         else{
             this.objects.select_quick_buttons.removeClass('active');
-            this.objects.bulk_operation_box.removeClass('active');
+            this.objects.bulk_operation_dropdown_box.removeClass('active');
             this.objects.content_box.removeClass('bulk_select_mode');
         }
         // Bind functions.
@@ -223,10 +224,10 @@ admin_app.library =
         this.objects.content_box.find('.checkbox-ui [type="checkbox"]').unbind().on('click',this.selectMedia.bind(this));
         this.objects.content_box.find('.controls [data-id="edit"]').unbind().on('click',this.editMedia.bind(this));
         this.objects.content_box.find('.controls [data-id="delete"]').unbind().on('click',this.deleteMedia.bind(this));
-        this.objects.content_box.find('a.image-preview').fullsizable({detach_id: 'main_header',clickBehaviour: 'next'});
+        this.objects.content_box.find('a.photo-preview').fullsizable({detach_id: 'main_header',clickBehaviour: 'next'});
         this.objects.content_box.find('a.video-preview').unbind('click').click(videomodal.open);
     },
-    bulkAction: function(e){
+    runBulkAction: function(e){
         var $this = this;
         var action = e.target.value;
         if(action == "chage_category"){
@@ -259,7 +260,7 @@ admin_app.library =
                     }
                 });
             }
-            var cancelDelete = function(){this.objects.bulk_operation_box.val('default')}
+            var cancelDelete = function(){this.objects.bulk_operation_dropdown_box.val('default')}
             modal.confirm("Do you want to delete "+item_count+" "+this.data.type+"?",deleteItems,cancelDelete.bind(this));
         }
     },
@@ -279,7 +280,7 @@ admin_app.library =
         if(e) e.preventDefault();
         var data = {
             kw: this.objects.search_box.val(),
-            c: this.objects.category_box.val(),
+            c: this.objects.category_dropdown_box.val(),
             p: this.data.page.current,
             l: this.data.page.limit,
             m: 'json'
@@ -288,7 +289,7 @@ admin_app.library =
             if(this.objects.active_search) this.objects.active_search.abort();
             this.objects.active_search = $.ajax({
                 type: "get",
-                url: site.base_url+"/search/"+this.data.type,
+                url: site.base_url+"search/"+this.data.type,
                 context: this,
                 data: data,
                 dataType: "json",
@@ -302,15 +303,66 @@ admin_app.library =
             });
         //}
     },
-    pickType: function(e){
-        var type = e.target.value;
-        this.data.type = type;
-        this.getData();
+    renderCategoryDropdown() {
+        var category_structure = {};
+        var category_list = this.data.category_list;
+        var category_html = '<option value="" selected>All</option>';
+        // Build category structure.
+        for(var i=0;i<category_list.length;i++) {
+            if(category_list[i].level == 1){
+                category_structure['parent_'+category_list[i].id] = {self:category_list[i],children:[]};
+            }
+            if(category_list[i].level == 2){
+                var my_parent_id = 'parent_'+category_list[i].parent_id;
+                if(typeof category_structure[my_parent_id] !== 'undefined'){
+                    category_structure[my_parent_id]['children'].push(category_list[i]);
+                }
+                else{
+                    category_structure[my_parent_id] = {self:null,children:[category_list[i]]};
+                }
+            }
+        }
+        // Create HTML output.
+        for(item in category_structure){
+            var main_cat = category_structure[item];
+            if(main_cat['self'].id == 1 && main_cat['self'].core == "yes"){
+                category_html += '<option value="'+main_cat['self'].id+'">'+main_cat['self'].title+'</option>';
+            }
+            else{
+                category_html += '<optgroup label="'+main_cat['self'].title+'">';
+                if(main_cat['children'].length > 0){
+                    for(var x=0;x<main_cat['children'].length;x++){
+                        category_html += '<option value="'+main_cat['children'][x].id+'">'+main_cat['children'][x].title+'</option>';
+                    }
+                }
+                category_html += '</optgroup>';
+            }
+        }
+        this.objects.category_dropdown_box.html(category_html);
     },
-    pickCategory: function(e){
-        var category_id = e.target.value;
+    renderMediaType: function(e) {
+        this.objects.pagination_index.val(1);
+        this.data.type = this.objects.media_type_dropdown_box.val();
         this.data.page.current = 1;
-        this.data.category = category_id;
+        // Fetch category list for selected media type
+        $.ajax({
+            "method": "get",
+            "context": this,
+            "url": site.base_url+'admin/media/categories/json',
+            "data": "list="+this.data.type,
+            "error" : function(jqXHR,textStatus,errorThrown){
+                toastr["error"]("Failed to load category list.", "Error "+jqXHR.status);
+            },
+            "success": function(response){
+                this.data.category_list = response;
+                this.renderCategoryDropdown();
+                this.getData();
+            }
+        });
+    },
+    setMediaCategory: function(e){
+        this.objects.pagination_index.val(1);
+        this.data.page.current = 1;
         this.getData();
     },
     switchDisplay: function(e){
@@ -361,7 +413,7 @@ admin_app.library =
     },
     moveToCategory: function(e){
         var parent = $(e.target).parents(".media-entry");
-        var endpoint = site.base_url+this.objects.media_type_box.val()+'/update';
+        var endpoint = site.base_url+this.objects.media_type_dropdown_box.val()+'/update';
         var data = {
             id: parent.attr('data-id'),
             category_id: parent.attr('data-category_id')
@@ -386,12 +438,12 @@ admin_app.library =
             }
         }
         if(this.data.selected.length > 0){
-            if(!this.objects.bulk_operation_box.hasClass('active')) this.objects.bulk_operation_box.val('default');
-            this.objects.bulk_operation_box.addClass('active');
+            if(!this.objects.bulk_operation_dropdown_box.hasClass('active')) this.objects.bulk_operation_dropdown_box.val('default');
+            this.objects.bulk_operation_dropdown_box.addClass('active');
             this.objects.content_box.addClass('bulk_select_mode');
         }
         else{
-            this.objects.bulk_operation_box.removeClass('active');
+            this.objects.bulk_operation_dropdown_box.removeClass('active');
             this.objects.content_box.removeClass('bulk_select_mode');
         }
     },
@@ -415,8 +467,8 @@ admin_app.library =
     editMedia: function(e){
         var parent = $(e.target).parents(".media-entry");
         var id = parent.attr('data-id');
-        if(this.data.type == "images") {
-            admin_app.image_editor.open(id,this.getData.bind(this));
+        if(this.data.type == "photos") {
+            admin_app.photo_editor.open(id,this.getData.bind(this));
         }
         else if(this.data.type == "videos") {
             admin_app.video_editor.open(id,this.getData.bind(this));

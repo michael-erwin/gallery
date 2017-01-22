@@ -9,9 +9,9 @@ function js_string($subject)
 
 function clean_whitespace($subject)
 {
-    $pattern = ['/[\t\r\n]/','/\s+/'];
+    $pattern = ["/[\n\r\t]/","/\s\s+/"];
     $replace = ['',' '];
-    return preg_replace($pattern, $replace, $subject);
+    return preg_replace($pattern,$replace,$subject);
 }
 
 function clean_numeric_text($subject)
@@ -47,4 +47,11 @@ function clean_body_text($subject)
     $pattern = '/[^a-zA-Z0-9 \.\-_]/';
     $replace = '';
     return preg_replace($pattern, $replace, $subject);
+}
+
+function compress_html($subject)
+{
+    $pattern = ["/[\n\t]/","/\s{2,}/"];
+    $replace = ['',''];
+    return preg_replace($pattern,$replace,$subject);
 }
