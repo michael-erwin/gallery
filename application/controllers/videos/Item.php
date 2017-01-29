@@ -4,7 +4,7 @@
 */
 class Item extends CI_Controller
 {
-    
+
     function __construct()
     {
         parent::__construct();
@@ -43,7 +43,7 @@ class Item extends CI_Controller
         $type = "videos";
         $crumbs = [
             'Home' => base_url(),
-            'Videos' => base_url("search/videos"),
+            'Videos' => base_url("categories/videos"),
             $info['title'] => ""
         ];
         $media = [
@@ -59,7 +59,7 @@ class Item extends CI_Controller
         $data['pagination'] = '';
         $data['search_widget'] = $this->load->view('common/v_search_widget',['type'=>$type],true);
         $data['media_item_details'] = $this->load->view('common/v_video_item_page_frontend',$media,true);
-        
+
         // Page meta SEO logic.
         $data['page_title'] = $info['title'];
         $data['meta_description'] = $info['description'];
@@ -74,7 +74,7 @@ class Item extends CI_Controller
         ];
 
         // Javscript triggers.
-        $data['result_js_init'] = $this->load->view('scripts/v_scripts_image_page','',true);
+        $data['result_js_init'] = $this->load->view('scripts/v_scripts_photo_page','',true);
 
         $data['pagination'] = $this->load->view('common/v_pagination_widget',$pagination_data,true);
         $this->load->view("v_results_layout",$data);
@@ -104,33 +104,9 @@ class Item extends CI_Controller
         }
     }
 
-    private function formatSizeUnits($bytes)
-    {
-        if ($bytes >= 1073741824)
-        {
-            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
-        }
-        elseif ($bytes >= 1048576)
-        {
-            $bytes = number_format($bytes / 1048576, 2) . ' MB';
-        }
-        elseif ($bytes >= 1024)
-        {
-            $bytes = number_format($bytes / 1024, 2) . ' kB';
-        }
-        elseif ($bytes > 1)
-        {
-            $bytes = $bytes . ' bytes';
-        }
-        elseif ($bytes == 1)
-        {
-            $bytes = $bytes . ' byte';
-        }
-        else
-        {
-            $bytes = '0 bytes';
-        }
-
-        return $bytes;
+    private function formatSizeUnits($bytes, $decimals = 2) {
+        $size = ['B','kB','MB','GB','TB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f ", $bytes / pow(1000, $factor)) . @$size[$factor];
     }
 }

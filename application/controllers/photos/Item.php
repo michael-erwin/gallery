@@ -43,7 +43,7 @@ class Item extends CI_Controller
         $type = "photos";
         $crumbs = [
             'Home' => base_url(),
-            'photos' => base_url("search"),
+            'Photos' => base_url("categories/photos"),
             $info['title'] => ""
         ];
         $media = [
@@ -103,33 +103,9 @@ class Item extends CI_Controller
         }
     }
 
-    private function formatSizeUnits($bytes)
-    {
-        if ($bytes >= 1073741824)
-        {
-            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
-        }
-        elseif ($bytes >= 1048576)
-        {
-            $bytes = number_format($bytes / 1048576, 2) . ' MB';
-        }
-        elseif ($bytes >= 1024)
-        {
-            $bytes = number_format($bytes / 1024, 2) . ' kB';
-        }
-        elseif ($bytes > 1)
-        {
-            $bytes = $bytes . ' bytes';
-        }
-        elseif ($bytes == 1)
-        {
-            $bytes = $bytes . ' byte';
-        }
-        else
-        {
-            $bytes = '0 bytes';
-        }
-
-        return $bytes;
+    private function formatSizeUnits($bytes, $decimals = 2) {
+        $size = ['B','kB','MB','GB','TB'];
+        $factor = floor((strlen($bytes) - 1) / 3);
+        return sprintf("%.{$decimals}f ", $bytes / pow(1000, $factor)) . @$size[$factor];
     }
 }

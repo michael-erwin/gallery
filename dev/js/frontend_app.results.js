@@ -5,8 +5,10 @@ var results = {
     data: {
         type: 'photos',
         keywords: '',
-        category_name: '',
         category_id: '',
+        category_name: '',
+        main_category_id: "",
+        main_category_name: "",
         crumbs: {'Home': ""},
         route: 'search',
         page: {
@@ -35,10 +37,6 @@ var results = {
     },
     init: function(){
         // Cache DOM objects.
-        String.prototype.UCFirst = function() {
-            // Capitalize first letter of a string.
-            return this.charAt(0).toUpperCase() + this.slice(1);
-        }
         this.self = $('#results_app');
         this.objects.breadcrumbs = this.self.find('[data-id="breadcrumbs"]');
         this.objects.search_form = this.self.find('[data-id="search_form"]');
@@ -125,7 +123,7 @@ var results = {
                     var thumb = site.base_url+'media/photos/public/256/'+photo.uid+'.jpg';
                     var seo_link = photo.title.split(' ');
                     seo_link = site.base_url+'photos/item/'+seo_link.join('-')+'-'+photo.uid;
-                    html += '<div class="thumb-box col-md-3 col-sm-4 col-xs-6">'+
+                    html += '<div class="thumb-box centered col-md-3 col-sm-4 col-xs-6">'+
                                 '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="photo">'+
                                     '<a title="'+photo.title+'" class="image-link photo-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
                                         '<img src="'+thumb+'" />'+
@@ -147,7 +145,7 @@ var results = {
                     var data = JSON.stringify(video);
                     var thumb = site.base_url+'media/videos/public/256/'+video.uid+'.jpg';
                     var seo_link = site.base_url+'videos/item/'+video.title.replace(' ','-')+'-'+video.uid;
-                    html += '<div class="thumb-box col-md-3 col-sm-4 col-xs-6">'+
+                    html += '<div class="thumb-box centered col-md-3 col-sm-4 col-xs-6">'+
                                 '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="video">'+
                                     '<a title="'+video.title+'" class="image-link video-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
                                         '<img src="'+thumb+'" />'+
@@ -209,17 +207,17 @@ var results = {
             current_uri = site.base_url+'search/'+this.data.type+'?kw='+this.data.keywords+'&p='+this.data.page.current;
         }
         else if(this.data.route == "categories") {
-            current_uri = site.base_url+'categories/'+this.data.category_name+'-'+this.data.category_id+'/'+this.data.type+'/'+this.data.page.current;
+            current_uri = site.base_url+'categories/'+
+                          this.data.type+'/'+
+                          this.data.main_category_name+'-'+this.data.main_category_id+'/'+
+                          this.data.category_name+'-'+this.data.category_id+'/'+
+                          this.data.page.current;
         }
         history.replaceState(null, null, current_uri);
         // Bind events.
         this.attachThumbActions();
     },
     attachThumbActions: function() {
-        /*this.objects.thumbs_box.find('a.photo-preview').fullsizable({
-            detach_id: 'thumbs_display',
-            clickBehaviour: 'next'
-        });*/
         //if(typeof videomodal !== "undefined") this.objects.thumbs_box.find('a.video-preview').unbind('click').click(videomodal.open);
         this.objects.thumbs_box.find('a').unbind('click').click(modal_media.open.bind(modal_media));
         this.objects.thumbs_box.find('[data-id="favorites"]').unbind('click').click(favorites.add.bind(favorites));
@@ -263,10 +261,7 @@ var results = {
         }
     },
     scrollToTop(){
-        this.document.animate({scrollTop: "0px"},300,function(){
-            //$('#thumbs_display .ajax-loader').css('display','block');
-            //$('body').addClass('loading');
-        });
+        this.document.animate({scrollTop: "0px"},300,function(){});
     },
     download: function(e) {
         var thumb = $(e.target).parents(".thumb");

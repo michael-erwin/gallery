@@ -51,7 +51,7 @@ function clean_body_text($subject)
 
 function compress_html($subject)
 {
-    $pattern = ["/[\n\t]/","/\s{2,}/"];
+    $pattern = ["/[\n\r\t]/","/\s{2,}/"];
     $replace = ['',''];
     return preg_replace($pattern,$replace,$subject);
 }

@@ -57,7 +57,7 @@
                 </section>
                 <section id="category_thumbs_display" class="container-fluid centered max-width">
                     <?php echo @$category_thumbs;?>
-                    
+
                 </section>
                 <section id="thumbs_display" class="container-fluid centered max-width">
                     <div class="clearfix" data-id="thumbs">

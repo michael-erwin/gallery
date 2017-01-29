@@ -12,13 +12,16 @@ class Test extends CI_Controller
 
     public function _remap()
     {
-        $url = "http://www.youtube.com?video=1234534";
-        $sch = parse_url($url, PHP_URL_SCHEME);
-        if(empty($sch)){
-            echo "Scheme is empty.";
+        $link = "";
+        $crumbs =[
+            "o"=>"One",
+            "t"=>"Two",
+            "tr"=>"Three"
+        ];
+        foreach($crumbs as $crumb)
+        {
+            $link .= $crumb.'>';
         }
-        else {
-            echo "Scheme is ".$sch;
-        }
+        echo $link;
     }
 }

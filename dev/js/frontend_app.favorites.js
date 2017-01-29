@@ -126,7 +126,7 @@ var favorites = {
         if(media_type == "photos") {
             if(this.data.photos.length > 0) {
                 var loading = '<div class="favorites-loading"><img src="'+site.base_url+'assets/img/hourglass.gif" /></div>';
-                this.objects.modal_title.text('My Favorites (Images)');
+                this.objects.modal_title.text('My Favorites (Photos)');
                 this.objects.modal_body.html(loading);
                 this.objects.modal.modal('show');
                 $.ajax({

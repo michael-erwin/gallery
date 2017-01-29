@@ -212,6 +212,7 @@ class Search extends CI_Controller
             }
 
         }
+        $data['thumbs'] = compress_html($data['thumbs']);
 
         // Pagination display logic.
         $pagination_data = [

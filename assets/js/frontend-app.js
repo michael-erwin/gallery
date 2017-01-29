@@ -1,4 +1,5 @@
-function formatSizeUnits(t){return t>=1073741824?t=2..toFixed(2)+" GB":t>=1048576?t=2..toFixed(2)+" MB":t>=1024?t=2..toFixed(2)+" kB":t>1?t+=" bytes":1==t?t+=" byte":t="0 bytes",t};
+function formatSizeUnits(bytes){if(bytes == 0) return '0 Bytes';var k = 1000,dm = 2,sizes = ['B', 'kB', 'MB', 'GB', 'TB'],i = Math.floor(Math.log(bytes) / Math.log(k));return parseFloat((bytes / Math.pow(k, i)).toFixed(dm)) + ' ' + sizes[i];}
+String.prototype.UCFirst = function() {return this.charAt(0).toUpperCase() + this.slice(1);}
 
 var favorites = {
     self: null,
@@ -124,7 +125,7 @@ var favorites = {
         if(media_type == "photos") {
             if(this.data.photos.length > 0) {
                 var loading = '<div class="favorites-loading"><img src="'+site.base_url+'assets/img/hourglass.gif" /></div>';
-                this.objects.modal_title.text('My Favorites (Images)');
+                this.objects.modal_title.text('My Favorites (Photos)');
                 this.objects.modal_body.html(loading);
                 this.objects.modal.modal('show');
                 $.ajax({
@@ -217,8 +218,10 @@ var results = {
     data: {
         type: 'photos',
         keywords: '',
-        category_name: '',
         category_id: '',
+        category_name: '',
+        main_category_id: "",
+        main_category_name: "",
         crumbs: {'Home': ""},
         route: 'search',
         page: {
@@ -246,9 +249,6 @@ var results = {
         loading: null
     },
     init: function(){
-        String.prototype.UCFirst = function() {
-            return this.charAt(0).toUpperCase() + this.slice(1);
-        }
         this.self = $('#results_app');
         this.objects.breadcrumbs = this.self.find('[data-id="breadcrumbs"]');
         this.objects.search_form = this.self.find('[data-id="search_form"]');
@@ -332,7 +332,7 @@ var results = {
                     var thumb = site.base_url+'media/photos/public/256/'+photo.uid+'.jpg';
                     var seo_link = photo.title.split(' ');
                     seo_link = site.base_url+'photos/item/'+seo_link.join('-')+'-'+photo.uid;
-                    html += '<div class="thumb-box col-md-3 col-sm-4 col-xs-6">'+
+                    html += '<div class="thumb-box centered col-md-3 col-sm-4 col-xs-6">'+
                                 '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="photo">'+
                                     '<a title="'+photo.title+'" class="image-link photo-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
                                         '<img src="'+thumb+'" />'+
@@ -354,7 +354,7 @@ var results = {
                     var data = JSON.stringify(video);
                     var thumb = site.base_url+'media/videos/public/256/'+video.uid+'.jpg';
                     var seo_link = site.base_url+'videos/item/'+video.title.replace(' ','-')+'-'+video.uid;
-                    html += '<div class="thumb-box col-md-3 col-sm-4 col-xs-6">'+
+                    html += '<div class="thumb-box centered col-md-3 col-sm-4 col-xs-6">'+
                                 '<div class="thumb" data-data=\''+data.replace("'","")+'\' data-media="video">'+
                                     '<a title="'+video.title+'" class="image-link video-preview" href="'+seo_link+'" style="background-image:url(\''+thumb+'\')">'+
                                         '<img src="'+thumb+'" />'+
@@ -412,7 +412,11 @@ var results = {
             current_uri = site.base_url+'search/'+this.data.type+'?kw='+this.data.keywords+'&p='+this.data.page.current;
         }
         else if(this.data.route == "categories") {
-            current_uri = site.base_url+'categories/'+this.data.category_name+'-'+this.data.category_id+'/'+this.data.type+'/'+this.data.page.current;
+            current_uri = site.base_url+'categories/'+
+                          this.data.type+'/'+
+                          this.data.main_category_name+'-'+this.data.main_category_id+'/'+
+                          this.data.category_name+'-'+this.data.category_id+'/'+
+                          this.data.page.current;
         }
         history.replaceState(null, null, current_uri);
         this.attachThumbActions();
@@ -460,8 +464,7 @@ var results = {
         }
     },
     scrollToTop(){
-        this.document.animate({scrollTop: "0px"},300,function(){
-        });
+        this.document.animate({scrollTop: "0px"},300,function(){});
     },
     download: function(e) {
         var thumb = $(e.target).parents(".thumb");
